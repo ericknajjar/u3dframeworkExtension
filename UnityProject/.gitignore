@@ -1,0 +1,9 @@
+*.csproj
+*.pidb
+*.sln
+*.userprefs
+*.pidb.meta
+Library/
+Temp/
+*.unityproj
+*test-results/
