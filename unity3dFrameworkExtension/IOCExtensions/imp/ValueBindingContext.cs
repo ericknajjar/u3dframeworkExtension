@@ -8,9 +8,9 @@ namespace u3dExtensions.IOC
 		public class ValueBindingContext: IValueBindingContext
 		{
 			Dictionary<object,IBinding> m_bindings = new Dictionary<object,IBinding>(); 
-			public object Name{get;private set;}
+			public IBindingName Name{get;private set;}
 
-			public ValueBindingContext(object name)
+			public ValueBindingContext(IBindingName name)
 			{
 				Name = name;
 			}
@@ -18,8 +18,10 @@ namespace u3dExtensions.IOC
 			#region IValueBindingContext implementation
 			public void To<T> (Func<T> func)
 			{
-				m_bindings[typeof(T)] = new Binding(func);
+				var binding = new Binding(func);
+				To(new BindingKey(typeof(T)),binding);
 			}
+				
 			#endregion
 
 			public IValueBindingContext<T> As<T>()
@@ -27,9 +29,20 @@ namespace u3dExtensions.IOC
 				return new ValueBingindContextAdapter<T>(this);
 			}
 
-			internal void To<T>(IBinding biding)
+			public IUnsafeValueBindingContext Unsafe(IBindingKey key)
 			{
-				m_bindings[typeof(T)] = biding;
+				return new UnsafeValueBindindContextAdapter(key,this);
+			}
+
+			internal void To<T>(IBinding binding)
+			{
+				To(new BindingKey(typeof(T)),binding);
+			}
+
+			internal void To(IBindingKey key,IBinding biding)
+			{
+				biding.CheckRequiremets(key,Name);
+				m_bindings[key] = biding;
 			}
 
 			public object Get(object key, IBindingContext currentBindingContext)
@@ -42,7 +55,6 @@ namespace u3dExtensions.IOC
 				}
 
 				throw new BindingNotFound("With key: "+key);
-
 			}
 				
 		}

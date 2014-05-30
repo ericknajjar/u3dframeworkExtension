@@ -8,7 +8,7 @@ namespace IOCExtensionsTests.BindingContextTets
 		//static BindingContext m_context 
 		public static IBindingContext BindingContext ()
 		{
-			return new BindingContext();
+			return u3dExtensions.IOC.BindingContext.Create();
 		}
 	}
 }

@@ -2,9 +2,10 @@
 
 namespace u3dExtensions.IOC
 {
-	internal interface IBinding
+	public interface IBinding
 	{
 		object Get(IBindingContext bindingContext);
+		void CheckRequiremets(IBindingKey key, IBindingName name);
 	}
 }
 

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using u3dExtensions.IOC;
+using u3dExtensions.IOC.extesions;
 
 namespace IOCExtensionsTests.BindingContextTets
 {
@@ -98,6 +99,7 @@ namespace IOCExtensionsTests.BindingContextTets
 			IBindingContext context = TestsFactory.BindingContext();
 
 			context.Bind<int>().With<string>("MyText").To((value)=> 45);
+			//context.Bind<int>().With<string>("MyText").To((value)=> 45);
 
 			context.Bind<string>("MyText").To(()=> "uhul");
 
@@ -208,15 +210,45 @@ namespace IOCExtensionsTests.BindingContextTets
 			Assert.DoesNotThrow( () => context.Bind<int>("name").With<int>().With<int>().To((str,flt)=> 45));
 		}
 
-		/*[Test ()]
-		public void TowRequireIteselWithDifferenNameNoError2()
+		[Test ()]
+		public void UnsafeSimpleBiding()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			IBiding binging = new Bi
+			System.Func<int> func = () => 45;
+			IBinding binding = new Binding(func);
 
-			Assert.DoesNotThrow( () => context.Bind<int>("name").With<int>().With<int>().To((str,flt)=> 45));
-		}*/
+			context.Unsafe.Bind(typeof(int)).To(binding);
+
+			Assert.AreEqual(45,context.Get<int>());
+		}
+
+		[Test ()]
+		public void UnsafeNamedBiding()
+		{
+			IBindingContext context = TestsFactory.BindingContext();
+
+			System.Func<int> func = () => 45;
+			IBinding binding = new Binding(func);
+
+			context.Unsafe.Bind("name",typeof(int)).To(binding);
+
+			Assert.AreEqual(45,context.Get<int>("name"));
+		}
+
+
+		[Test ()]
+		public void UnsafeSelfRequiremetBidingError()
+		{
+			IBindingContext context = TestsFactory.BindingContext();
+			IBindingRequirement requirement = BindingRequirements.Instance.With<int>();
+
+			System.Func<int> func = () => 45;
+
+			IBinding binding = new Binding(func,requirement);
+
+			Assert.Throws<BindingSelfRequirement>(() => context.Unsafe.Bind(typeof(int)).To(binding));
+		}
 	}
 
 }

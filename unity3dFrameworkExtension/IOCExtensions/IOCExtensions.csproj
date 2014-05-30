@@ -41,17 +41,25 @@
     <Compile Include="api\IBinding.cs" />
     <Compile Include="api\IBindingRequirement.cs" />
     <Compile Include="imp\BindingRequirements.cs" />
-    <Compile Include="api\IUnsafeBindingContext.cs" />
     <Compile Include="imp\UnsafeBindingContextAdapter.cs" />
     <Compile Include="errors\BindingSelfRequirement.cs" />
     <Compile Include="errors\IOCExtensionsException.cs" />
-    <Compile Include="imp\EmptyClass.cs" />
+    <Compile Include="imp\Binding.cs" />
+    <Compile Include="api\usafe\IUnsafeBindingContext.cs" />
+    <Compile Include="api\usafe\IUnsafeValueBindingContext.cs" />
+    <Compile Include="api\IBindingName.cs" />
+    <Compile Include="api\IBindingKey.cs" />
+    <Compile Include="imp\BindingKey.cs" />
+    <Compile Include="imp\BindingName.cs" />
+    <Compile Include="api\extensions\Extensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="api\" />
     <Folder Include="imp\" />
     <Folder Include="errors\" />
+    <Folder Include="api\usafe\" />
+    <Folder Include="api\extensions\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

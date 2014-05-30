@@ -33,6 +33,22 @@ namespace u3dExtensions.IOC
 				return m_factory.DynamicInvoke(parameters.ToArray());
 			}
 		}
+
+		public void CheckRequiremets (IBindingKey key, IBindingName name)
+		{
+			var req = BindingRequirements.Instance.With(name,key);
+
+			foreach(var requiremet in m_requirements)
+			{
+				//Console.WriteLine(requiremet.ToString() +" = " +req.ToString());
+
+				if(req.Equals(requiremet))
+				{
+					throw new BindingSelfRequirement();
+				}
+			}
+
+		}
 	}
 }
 

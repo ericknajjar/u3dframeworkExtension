@@ -5,36 +5,46 @@ namespace u3dExtensions.IOC
 {
 	public partial class BindingContext: IBindingContext
 	{
-		Dictionary<object,ValueBindingContext> m_namedBindings;
+		Dictionary<IBindingName,ValueBindingContext> m_namedBindings;
 
-		public BindingContext()
+		BindingContext()
 		{
-			m_namedBindings = new Dictionary<object,ValueBindingContext>();
+			m_namedBindings = new Dictionary<IBindingName,ValueBindingContext>();
 			//Creating empty binding
-			GetBinding(InnerBindingNames.Empty,true);
+			GetBinding(new BindingName(InnerBindingNames.Empty),true);
+		}
+
+		static public IBindingContext Create()
+		{
+			return new BindingContext();
 		}
 
 		#region IBindingContext implementation
 
 		IValueBindingContext<T> IBindingContext.Bind<T> ()
 		{
-			return GetBinding(InnerBindingNames.Empty,true).As<T>();
+			return GetBinding(new BindingName(InnerBindingNames.Empty),true).As<T>();
 		}
 
-		IValueBindingContext<T> IBindingContext.Bind<T> (object name)
+		IValueBindingContext<T> IBindingContext.Bind<T> (IBindingName name)
 		{
 			return GetBinding(name,true).As<T>();
 		}
 
-		T IBindingContext.Get<T> ()
+		public IUnsafeValueBindingContext Bind(IBindingName name,IBindingKey key)
 		{
-			object key = typeof(T);
-			return (T)Get(InnerBindingNames.Empty,key);
+			return GetBinding(name,true).Unsafe(key);
 		}
 
-		T IBindingContext.Get<T> (object name)
+		T IBindingContext.Get<T> ()
 		{
-			object key = typeof(T);
+			IBindingKey key = new BindingKey(typeof(T));
+			return (T)Get(new BindingName(InnerBindingNames.Empty),key);
+		}
+
+		T IBindingContext.Get<T> (IBindingName name)
+		{
+			IBindingKey key = new BindingKey(typeof(T));
 			return (T)Get(name,key);
 		}
 	
@@ -47,13 +57,14 @@ namespace u3dExtensions.IOC
 		}
 		#endregion
 
-		public object Get(object name,object key)
+		public object Get(IBindingName name,IBindingKey key)
 		{
 			ValueBindingContext ret = GetBinding(name);
 			return ret.Get(key,this);
 		}
+			
 
-		ValueBindingContext GetBinding(object name, bool create)
+		ValueBindingContext GetBinding(IBindingName name, bool create)
 		{
 			ValueBindingContext ret = null;
 
@@ -72,7 +83,7 @@ namespace u3dExtensions.IOC
 			throw new BindingNotFound();
 		}
 
-		ValueBindingContext GetBinding(object name)
+		ValueBindingContext GetBinding(IBindingName name)
 		{
 			return GetBinding(name,false);
 		}

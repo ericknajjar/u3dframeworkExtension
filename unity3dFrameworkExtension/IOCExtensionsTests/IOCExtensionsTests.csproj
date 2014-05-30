@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="BindingContextTests\Tests.cs" />
     <Compile Include="BindingContextTests\TestsFactory.cs" />
+    <Compile Include="BindingTests\Tests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -52,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BindingContextTests\" />
+    <Folder Include="BindingTests\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
