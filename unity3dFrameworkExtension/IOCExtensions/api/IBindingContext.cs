@@ -4,11 +4,13 @@ namespace u3dExtensions.IOC
 {
 	public interface IBindingContext
 	{
-		IValueBindingContext Bind<T>();
-		IValueBindingContext Bind<T>(object name);
+		IValueBindingContext<T> Bind<T>();
+		IValueBindingContext<T> Bind<T>(object name);
 
 		T Get<T>();
 		T Get<T>(object name);
+
+		IUnsafeBindingContext Unsafe{get;}
 	}
 }
 

@@ -35,6 +35,17 @@
     <Compile Include="api\IValueBindingContext.cs" />
     <Compile Include="imp\BindingContext.cs" />
     <Compile Include="errors\BindingNotFound.cs" />
+    <Compile Include="imp\InnerBindingNames.cs" />
+    <Compile Include="imp\BindingContextInnerClasses.cs" />
+    <Compile Include="imp\ValueBindingContext.cs" />
+    <Compile Include="api\IBinding.cs" />
+    <Compile Include="api\IBindingRequirement.cs" />
+    <Compile Include="imp\BindingRequirements.cs" />
+    <Compile Include="api\IUnsafeBindingContext.cs" />
+    <Compile Include="imp\UnsafeBindingContextAdapter.cs" />
+    <Compile Include="errors\BindingSelfRequirement.cs" />
+    <Compile Include="errors\IOCExtensionsException.cs" />
+    <Compile Include="imp\EmptyClass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

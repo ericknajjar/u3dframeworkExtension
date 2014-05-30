@@ -2,9 +2,13 @@
 
 namespace u3dExtensions.IOC
 {
-	public class BindingNotFound: U3dFrameworkExtensionException
+	public class BindingNotFound: IOCExtensionsException
 	{
 		public BindingNotFound ()
+		{
+		}
+
+		public BindingNotFound (object msg): base(msg)
 		{
 		}
 	}

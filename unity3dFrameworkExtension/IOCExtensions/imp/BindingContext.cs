@@ -3,74 +3,80 @@ using System.Collections.Generic;
 
 namespace u3dExtensions.IOC
 {
-	public class BindingContext: IBindingContext
+	public partial class BindingContext: IBindingContext
 	{
-		ValueBingindContext m_valueBingindContext = new ValueBingindContext();
-		Dictionary<object,ValueBingindContext> m_namedBindings = new Dictionary<object,ValueBingindContext>();
+		Dictionary<object,ValueBindingContext> m_namedBindings;
 
 		public BindingContext()
 		{
-
+			m_namedBindings = new Dictionary<object,ValueBindingContext>();
+			//Creating empty binding
+			GetBinding(InnerBindingNames.Empty,true);
 		}
 
 		#region IBindingContext implementation
 
-		IValueBindingContext IBindingContext.Bind<T> ()
+		IValueBindingContext<T> IBindingContext.Bind<T> ()
 		{
-			return m_valueBingindContext;
+			return GetBinding(InnerBindingNames.Empty,true).As<T>();
 		}
 
-		IValueBindingContext IBindingContext.Bind<T> (object name)
+		IValueBindingContext<T> IBindingContext.Bind<T> (object name)
 		{
-			ValueBingindContext ret = null;
-			object key = typeof(T);
-
-			if(!m_namedBindings.TryGetValue(key,out ret))
-			{
-				ret = new ValueBingindContext();
-
-				m_namedBindings[name] = ret;
-			}
-
-			return ret;
+			return GetBinding(name,true).As<T>();
 		}
 
 		T IBindingContext.Get<T> ()
 		{
-			return (T)m_valueBingindContext.Get(typeof(T));
+			object key = typeof(T);
+			return (T)Get(InnerBindingNames.Empty,key);
 		}
 
 		T IBindingContext.Get<T> (object name)
 		{
-			return (T)m_namedBindings[name].Get(typeof(T));
+			object key = typeof(T);
+			return (T)Get(name,key);
 		}
 	
-		#endregion
 
-		class ValueBingindContext: IValueBindingContext
-		{
-			Dictionary<object,Delegate> m_bindings = new Dictionary<object,Delegate>(); 
-
-			#region IValueBindingContext implementation
-			void IValueBindingContext.To<T> (Func<T> func)
+		public IUnsafeBindingContext Unsafe {
+			get 
 			{
-				m_bindings[typeof(T)] = func;
-			}
-			#endregion
-
-			public object Get(object key)
-			{
-				Delegate ret = null;
-
-				if(m_bindings.TryGetValue(key,out ret))
-				{
-					return ret.DynamicInvoke(null);
-				}
-
-				throw new BindingNotFound();
-
+				return new UnsafeBindingContextAdapter(this);
 			}
 		}
+		#endregion
+
+		public object Get(object name,object key)
+		{
+			ValueBindingContext ret = GetBinding(name);
+			return ret.Get(key,this);
+		}
+
+		ValueBindingContext GetBinding(object name, bool create)
+		{
+			ValueBindingContext ret = null;
+
+			if(m_namedBindings.TryGetValue(name,out ret))
+			{
+				return ret;
+			}
+
+			if(create)
+			{
+				ret = new ValueBindingContext(name);
+				m_namedBindings[name] = ret;
+				return ret;
+			}
+
+			throw new BindingNotFound();
+		}
+
+		ValueBindingContext GetBinding(object name)
+		{
+			return GetBinding(name,false);
+		}
+
 	}
 }
 
