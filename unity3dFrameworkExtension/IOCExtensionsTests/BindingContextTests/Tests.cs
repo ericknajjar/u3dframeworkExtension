@@ -11,9 +11,11 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void BindingSimpleInt ()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			IBindingContextFactory factory = TestsFactory.ContextFactory();
 
-			context.Bind<int>().To(()=> 45);
+			factory.Bind<int>().To(()=> 45);
+
+			var context = factory.GetContext();
 
 			int ret = context.Get<int>();
 
@@ -23,16 +25,19 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void BindingSimpleIntError ()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
+			var context = factory.GetContext();
 			Assert.Throws<BindingNotFound>(() => context.Get<int>());
 		}
 
 		[Test ()]
 		public void NamedBindingInt ()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			context.Bind<int>("coisa").To(()=> 45);
+			factory.Bind<int>("coisa").To(()=> 45);
+
+			var context = factory.GetContext();
 
 			int ret = context.Get<int>("coisa");
 
@@ -42,7 +47,8 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void NamedBindingIntError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
+			var context = factory.GetContext();;
 
 			Assert.Throws<BindingNotFound>(() => context.Get<int>("coisa"));
 		}
@@ -50,9 +56,10 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void NamedBindingDiferentTypeError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
-
-			context.Bind<string>("coisa").To(()=> "string");
+			var factory = TestsFactory.ContextFactory();
+		
+			factory.Bind<string>("coisa").To(()=> "string");
+			var context = factory.GetContext();
 
 			Assert.Throws<BindingNotFound>(() => context.Get<int>("coisa"));
 		}
@@ -60,9 +67,11 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void NamedBindingDiferentNameError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
+		
+			factory.Bind<int>("coisa").To(()=> 45);
 
-			context.Bind<int>("coisa").To(()=> 45);
+			var context = factory.GetContext();
 
 			Assert.Throws<BindingNotFound>(() => context.Get<int>("coisa2"));
 		}
@@ -70,11 +79,13 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void OneArgumentBinding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			context.Bind<int>().With<string>().To((value)=> 45);
+			factory.Bind<int>().With<string>().To((value)=> 45);
 
-			context.Bind<string>().To(()=> "uhul");
+			factory.Bind<string>().To(()=> "uhul");
+
+			var context = factory.GetContext();
 
 			int ret = context.Get<int>();
 
@@ -85,10 +96,11 @@ namespace IOCExtensionsTests.BindingContextTets
 		public void OneArgumentBindingError()
 		{
 			//Requires a string to get the int binging
+			var factory = TestsFactory.ContextFactory();
 
-			IBindingContext context = TestsFactory.BindingContext();
+			factory.Bind<int>().With<string>().To((value)=> 45);
 
-			context.Bind<int>().With<string>().To((value)=> 45);
+			var context = factory.GetContext();
 
 			Assert.Throws<BindingNotFound>(() =>context.Get<int>());
 		}
@@ -96,12 +108,14 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void OneArgumentNamedBinding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			context.Bind<int>().With<string>("MyText").To((value)=> 45);
+			factory.Bind<int>().With<string>("MyText").To((value)=> 45);
 			//context.Bind<int>().With<string>("MyText").To((value)=> 45);
 
-			context.Bind<string>("MyText").To(()=> "uhul");
+			factory.Bind<string>("MyText").To(()=> "uhul");
+
+			var context = factory.GetContext();
 
 			int ret = context.Get<int>();
 
@@ -111,15 +125,17 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void OneCorrectArgumentNamedBinding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
 			string parameter = "";
 
-			context.Bind<int>().With<string>("MyText").To((value)=>{ parameter = value; return 45;});
+			factory.Bind<int>().With<string>("MyText").To((value)=>{ parameter = value; return 45;});
 
-			context.Bind<string>().To(()=> "uhul");
+			factory.Bind<string>().To(()=> "uhul");
 
-			context.Bind<string>("MyText").To(()=> "uhul2");
+			factory.Bind<string>("MyText").To(()=> "uhul2");
+
+			var context = factory.GetContext();
 
 			context.Get<int>();
 
@@ -129,13 +145,15 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void RightArgumentArgumentBinding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
 			string parameter = "";
 
-			context.Bind<int>().With<string>().To((value)=>{ parameter = value; return 45;});
+			factory.Bind<int>().With<string>().To((value)=>{ parameter = value; return 45;});
 
-			context.Bind<string>().To(()=> "uhul");
+			factory.Bind<string>().To(()=> "uhul");
+
+			var context = factory.GetContext();
 
 			context.Get<int>();
 
@@ -145,39 +163,41 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void RequireIteselfError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>().With<int>().To((value)=> 45) );
+			Assert.Throws<BindingSelfRequirement>( () => factory.Bind<int>().With<int>().To((value)=> 45) );
 
 		}
 
 		[Test ()]
 		public void RequireIteselWithSameNameError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>("name").With<int>("name").To((value)=> 45));
+			Assert.Throws<BindingSelfRequirement>( () => factory.Bind<int>("name").With<int>("name").To((value)=> 45));
 		
 		}
 
 		[Test ()]
 		public void RequireIteselWithDifferenNameNoError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			Assert.DoesNotThrow( () => context.Bind<int>("name").With<int>("differentName").To((value)=> 45));
+			Assert.DoesNotThrow( () => factory.Bind<int>("name").With<int>("differentName").To((value)=> 45));
 		}
 
 		[Test ()]
 		public void TwoArgumentBinding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			context.Bind<int>().With<string>().With<float>().To((str,flt)=> 45);
 
-			context.Bind<string>().To(()=> "uhul");
+			factory.Bind<int>().With<string>().With<float>().To((str,flt)=> 45);
 
-			context.Bind<float>().To(()=> 3.0f);
+			factory.Bind<string>().To(()=> "uhul");
+
+			factory.Bind<float>().To(()=> 3.0f);
+			var context = factory.GetContext();
 
 			int ret = context.Get<int>();
 
@@ -187,9 +207,9 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void TwoRequireIteselWithSameNameError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>().With<string>().With<int>().To((str,flt)=> 45));
+			Assert.Throws<BindingSelfRequirement>( () => factory.Bind<int>().With<string>().With<int>().To((str,flt)=> 45));
 
 
 		}
@@ -197,28 +217,29 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void TowRequireIteselWithDifferenNameNoError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			Assert.DoesNotThrow( () => context.Bind<int>("name").With<string>().With<int>("diferentName").To((str,flt)=> 45));
+			Assert.DoesNotThrow( () => factory.Bind<int>("name").With<string>().With<int>("diferentName").To((str,flt)=> 45));
 		}
 
 		[Test ()]
 		public void TowRequireIteselWithDifferenNameNoError2()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
-			Assert.DoesNotThrow( () => context.Bind<int>("name").With<int>().With<int>().To((str,flt)=> 45));
+			Assert.DoesNotThrow( () => factory.Bind<int>("name").With<int>().With<int>().To((str,flt)=> 45));
 		}
 
 		[Test ()]
 		public void UnsafeSimpleBiding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
 			System.Func<int> func = () => 45;
 			IBinding binding = new Binding(func);
 
-			context.Unsafe.Bind(typeof(int)).To(binding);
+			factory.Unsafe.Bind(typeof(int)).To(binding);
+			var context = factory.GetContext();
 
 			Assert.AreEqual(45,context.Get<int>());
 		}
@@ -226,12 +247,13 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void UnsafeNamedBiding()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 
 			System.Func<int> func = () => 45;
 			IBinding binding = new Binding(func);
 
-			context.Unsafe.Bind("name",typeof(int)).To(binding);
+			factory.Unsafe.Bind("name",typeof(int)).To(binding);
+			var context = factory.GetContext();
 
 			Assert.AreEqual(45,context.Get<int>("name"));
 		}
@@ -240,14 +262,27 @@ namespace IOCExtensionsTests.BindingContextTets
 		[Test ()]
 		public void UnsafeSelfRequiremetBidingError()
 		{
-			IBindingContext context = TestsFactory.BindingContext();
+			var factory = TestsFactory.ContextFactory();
 			IBindingRequirement requirement = BindingRequirements.Instance.With<int>();
 
 			System.Func<int> func = () => 45;
 
 			IBinding binding = new Binding(func,requirement);
 
-			Assert.Throws<BindingSelfRequirement>(() => context.Unsafe.Bind(typeof(int)).To(binding));
+			Assert.Throws<BindingSelfRequirement>(() => factory.Unsafe.Bind(typeof(int)).To(binding));
+		}
+
+		[Test ()]
+		public void GetItself()
+		{
+			var factory = TestsFactory.ContextFactory();
+			var context = factory.GetContext();
+
+
+			IBindingContext meAgain = context.Get<IBindingContext>(InnerBindingNames.CurrentBindingContext);
+
+			Assert.AreEqual(context,meAgain);
+
 		}
 	}
 

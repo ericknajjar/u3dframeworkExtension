@@ -12,18 +12,7 @@ namespace u3dExtensions.IOC
 		}
 
 
-	
 		#region IUnsafeBindingContext implementation
-
-		public IUnsafeValueBindingContext Bind (IBindingKey key)
-		{
-			return m_adaptee.Bind( new BindingName(InnerBindingNames.Empty),key);
-		}
-
-		public IUnsafeValueBindingContext Bind (IBindingName name, IBindingKey key)
-		{
-			return m_adaptee.Bind(name,key);
-		}
 
 		public object Get (IBindingName name, IBindingKey key)
 		{

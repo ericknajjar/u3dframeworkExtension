@@ -8,28 +8,33 @@ namespace u3dExtensions.IOC.extesions
 		{
 			return me.Get(new BindingName(name), new BindingKey(key));
 		}
+			
+	}
 
-	
-		public static  IUnsafeValueBindingContext Bind(this IUnsafeBindingContext me,object key)
+	public static class IUnsafeBindingContextFactoryExtensions
+	{
+		public static  IUnsafeValueBindingContext Bind(this IUnsafeBindingContextFactory me,object key)
 		{
 			return me.Bind(new BindingKey(key));
 		}
 
-		public static IUnsafeValueBindingContext Bind (this IUnsafeBindingContext me,object name,object key)
+		public static IUnsafeValueBindingContext Bind (this IUnsafeBindingContextFactory me,object name,object key)
 		{
 			return me.Bind(new BindingName(name),new BindingKey(key));
 		}
-
 	}
 
-	public static class IBindingContextExtensions
+	public static class IBindingContextFactoryExtensions
 	{
-		static public IValueBindingContext<T> Bind<T> (this IBindingContext me,object name)
+		static public IValueBindingContext<T> Bind<T> (this IBindingContextFactory me,object name)
 		{
 			return me.Bind<T>(new BindingName(name));
 		}
 			
-		static public  T Get<T>(this IBindingContext me,object name)
+	}
+	public static class IBindingContextExtensions
+	{
+		static public T Get<T>(this IBindingContext me,object name)
 		{
 			return me.Get<T>(new BindingName(name));
 		}
