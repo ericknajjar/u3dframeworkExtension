@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOCExtensions", "IOCExtensions\IOCExtensions.csproj", "{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOCExtensionsTests", "IOCExtensionsTests\IOCExtensionsTests.csproj", "{684213EC-11F7-49CC-AA50-79598462BF80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "IOCExtensionsTests\Tests.csproj", "{684213EC-11F7-49CC-AA50-79598462BF80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "U3dFrameworkExtensionsBase", "U3dFrameworkExtensionsBase\U3dFrameworkExtensionsBase.csproj", "{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}"
 EndProject

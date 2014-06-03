@@ -1,7 +1,7 @@
 ﻿using System;
 using u3dExtensions.IOC;
 
-namespace IOCExtensionsTests.BindingContextTets
+namespace u3dExtensions.Tests.BindingContextTets
 {
 	public static class TestsFactory
 	{

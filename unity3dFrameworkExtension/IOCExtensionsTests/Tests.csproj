@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{684213EC-11F7-49CC-AA50-79598462BF80}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>IOCExtensionsTests</RootNamespace>
+    <RootNamespace>u3dExtensions.Tests</RootNamespace>
     <AssemblyName>IOCExtensionsTests</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -39,6 +39,7 @@
     <Compile Include="BindingContextTests\Tests.cs" />
     <Compile Include="BindingContextTests\TestsFactory.cs" />
     <Compile Include="BindingTests\Tests.cs" />
+    <Compile Include="FuturesTests\Tests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -54,6 +55,7 @@
   <ItemGroup>
     <Folder Include="BindingContextTests\" />
     <Folder Include="BindingTests\" />
+    <Folder Include="FuturesTests\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -3,7 +3,7 @@ using System;
 using u3dExtensions.IOC;
 using u3dExtensions.IOC.extesions;
 
-namespace IOCExtensionsTests.BindingTests
+namespace u3dExtensions.Tests.BindingTests
 {
 	[TestFixture ()]
 	public class Tests
