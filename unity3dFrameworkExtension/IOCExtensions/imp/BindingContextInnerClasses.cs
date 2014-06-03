@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace u3dExtensions.IOC
 {
+	public partial class BindingContext
+	{
 		class ValueBingindContextAdapter<T>: IValueBindingContext<T>
 		{
 			ValueBindingContext m_adaptee;
@@ -139,6 +141,8 @@ namespace u3dExtensions.IOC
 				return ret;
 			}
 		}
-		
+
+	
+	}
 }
 

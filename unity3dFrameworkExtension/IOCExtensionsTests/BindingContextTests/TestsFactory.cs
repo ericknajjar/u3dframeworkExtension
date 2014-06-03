@@ -5,11 +5,10 @@ namespace IOCExtensionsTests.BindingContextTets
 {
 	public static class TestsFactory
 	{
-		public static IBindingContextFactory ContextFactory ()
+		//static BindingContext m_context 
+		public static IBindingContext BindingContext ()
 		{
-			IBindingContextFactory factory = BindingContextFactory.Create();
-
-			return factory;
+			return u3dExtensions.IOC.BindingContext.Create();
 		}
 	}
 }

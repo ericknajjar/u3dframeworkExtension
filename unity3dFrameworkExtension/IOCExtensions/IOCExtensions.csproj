@@ -52,9 +52,6 @@
     <Compile Include="imp\BindingKey.cs" />
     <Compile Include="imp\BindingName.cs" />
     <Compile Include="api\extensions\Extensions.cs" />
-    <Compile Include="api\IBindingContextFactory.cs" />
-    <Compile Include="imp\BindingContextFactory.cs" />
-    <Compile Include="api\usafe\IUnsafeBindingContextFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
