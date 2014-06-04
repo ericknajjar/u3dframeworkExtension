@@ -23,12 +23,9 @@ namespace u3dExtensions.IOC
 				var par = requirement.Get(bindingContext);
 				parameters.Add(par);
 			}
-
-
+		
 			parameters.AddRange(extras);
 
-			Console.WriteLine(string.Format("method:{0} paramsCount: {1} attempted{2}",m_factory.Method.Name,m_factory.Method.GetParameters().Length,
-				parameters.Count));
 			if(parameters.Count == 0)
 			{
 				return m_factory.DynamicInvoke(null);
