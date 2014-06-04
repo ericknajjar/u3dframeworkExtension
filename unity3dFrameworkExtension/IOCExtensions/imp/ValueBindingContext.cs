@@ -7,7 +7,7 @@ namespace u3dExtensions.IOC
 	{
 		public class ValueBindingContext: IValueBindingContext
 		{
-			Dictionary<object,IBinding> m_bindings = new Dictionary<object,IBinding>(); 
+			IDictionary<object,IBinding> m_bindings = new Dictionary<object,IBinding>(); 
 			public IBindingName Name{get;private set;}
 
 			public ValueBindingContext(IBindingName name)

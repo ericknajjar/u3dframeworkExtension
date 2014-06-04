@@ -42,8 +42,6 @@ namespace u3dExtensions.IOC
 
 			foreach(var requiremet in m_requirements)
 			{
-				//Console.WriteLine(requiremet.ToString() +" = " +req.ToString());
-
 				if(req.Equals(requiremet))
 				{
 					throw new BindingSelfRequirement();

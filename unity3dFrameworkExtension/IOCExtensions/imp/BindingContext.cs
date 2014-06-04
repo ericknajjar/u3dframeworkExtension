@@ -5,7 +5,7 @@ namespace u3dExtensions.IOC
 {
 	public partial class BindingContext: IBindingContext
 	{
-		Dictionary<IBindingName,ValueBindingContext> m_namedBindings;
+		IDictionary<IBindingName,ValueBindingContext> m_namedBindings;
 
 		BindingContext()
 		{
@@ -93,7 +93,6 @@ namespace u3dExtensions.IOC
 		{
 			return GetBinding(name,false);
 		}
-
 	}
 }
 
