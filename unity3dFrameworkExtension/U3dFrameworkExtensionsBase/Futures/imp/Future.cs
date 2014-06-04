@@ -4,8 +4,7 @@ namespace u3dExtensions
 {
 	public class Future<T>: IFuture<T>
 	{
-		T m_value;
-
+	
 		Action<T> m_mapFunc = (t) => {};
 		Action<System.Exception> m_recoveryFunc = e=>{};
 
@@ -63,7 +62,7 @@ namespace u3dExtensions
 
 		void FlushMapFunc()
 		{
-			m_mapFunc(m_value);
+			m_mapFunc(Value);
 			m_mapFunc = (x) =>{};
 			m_recoveryFunc = (e)=>{};
 		}
@@ -104,7 +103,7 @@ namespace u3dExtensions
 		{
 			if(IsSet) return;
 
-			m_value = value;
+			Value = value;
 			IsSet = true;
 			FlushMapFunc();
 		}
@@ -118,6 +117,11 @@ namespace u3dExtensions
 
 		public Exception Error
 		{
+			get;
+			private set;
+		}
+
+		public T Value {
 			get;
 			private set;
 		}

@@ -13,7 +13,10 @@ namespace u3dExtensions
 		IFuture<K> FlatMap<K> (System.Func<T,IFuture<K>> flatMapFunc);
 
 		bool IsSet{get;}
+
 		System.Exception Error{get;}
+
+		T Value{get;}
 	}
 }
 
