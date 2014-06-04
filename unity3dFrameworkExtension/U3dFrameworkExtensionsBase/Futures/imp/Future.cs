@@ -5,7 +5,6 @@ namespace u3dExtensions
 	public class Future<T>: IFuture<T>
 	{
 		T m_value;
-		System.Exception m_error;
 
 		Action<T> m_mapFunc = (t) => {};
 		Action<System.Exception> m_recoveryFunc = e=>{};
@@ -18,7 +17,7 @@ namespace u3dExtensions
 		internal Future (System.Exception error)
 		{
 			IsSet = false;
-			m_error = error;
+			Error = error;
 		}
 
 		#region IFuture implementation
@@ -36,9 +35,9 @@ namespace u3dExtensions
 		{
 			Future<K> other = new Future<K>();
 
-			if(m_error!=null)
+			if(Error!=null)
 			{
-				other.FlushErrorRecover(m_error);
+				other.FlushErrorRecover(Error);
 				return other;
 			}
 	
@@ -80,9 +79,9 @@ namespace u3dExtensions
 
 		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
 		{
-			if(m_error!=null)
+			if(Error!=null)
 			{
-				recoverFunc(m_error);
+				recoverFunc(Error);
 			}
 			else
 			{
@@ -95,7 +94,7 @@ namespace u3dExtensions
 
 		void FlushErrorRecover(System.Exception error)
 		{
-			m_error = error;
+			Error = error;
 			m_recoveryFunc(error);
 			m_recoveryFunc = (e)=>{};
 			m_mapFunc = (x)=>{};
@@ -112,6 +111,12 @@ namespace u3dExtensions
 
 						
 		public bool IsSet
+		{
+			get;
+			private set;
+		}
+
+		public Exception Error
 		{
 			get;
 			private set;
