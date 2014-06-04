@@ -36,6 +36,12 @@ namespace u3dExtensions.IOC
 			return GetBinding(name,true).Unsafe(key);
 		}
 
+		T IBindingContext.Get<T> (IBindingName name, params object[] extras)
+		{
+			IBindingKey key = new BindingKey(typeof(T));
+			return (T)Get(name,key,extras);
+		}
+
 		T IBindingContext.Get<T> ()
 		{
 			IBindingKey key = new BindingKey(typeof(T));
@@ -57,10 +63,10 @@ namespace u3dExtensions.IOC
 		}
 		#endregion
 
-		public object Get(IBindingName name,IBindingKey key)
+		public object Get(IBindingName name,IBindingKey key, params object[] extras)
 		{
 			ValueBindingContext ret = GetBinding(name);
-			return ret.Get(key,this);
+			return ret.Get(key,this,extras);
 		}
 			
 

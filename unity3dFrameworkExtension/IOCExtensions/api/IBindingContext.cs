@@ -9,6 +9,7 @@ namespace u3dExtensions.IOC
 
 		T Get<T>();
 		T Get<T>(IBindingName name);
+		T Get<T>(IBindingName name,params object[] extras);
 
 		IUnsafeBindingContext Unsafe{get;}
 	}

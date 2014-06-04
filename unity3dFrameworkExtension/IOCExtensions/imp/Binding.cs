@@ -14,9 +14,9 @@ namespace u3dExtensions.IOC
 			m_factory = factory;
 		}
 
-		public object Get(IBindingContext bindingContext)
+		public object Get(IBindingContext bindingContext, params object[] extras)
 		{
-			List<object> parameters = new List<object>(m_requirements.Length);
+			List<object> parameters = new List<object>(m_requirements.Length+extras.Length);
 
 			foreach(var requirement in m_requirements)
 			{
@@ -24,6 +24,11 @@ namespace u3dExtensions.IOC
 				parameters.Add(par);
 			}
 
+
+			parameters.AddRange(extras);
+
+			Console.WriteLine(string.Format("method:{0} paramsCount: {1} attempted{2}",m_factory.Method.Name,m_factory.Method.GetParameters().Length,
+				parameters.Count));
 			if(parameters.Count == 0)
 			{
 				return m_factory.DynamicInvoke(null);

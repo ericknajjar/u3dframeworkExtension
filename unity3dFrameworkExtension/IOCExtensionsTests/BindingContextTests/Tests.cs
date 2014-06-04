@@ -249,6 +249,26 @@ namespace u3dExtensions.Tests.BindingContextTets
 
 			Assert.Throws<BindingSelfRequirement>(() => context.Unsafe.Bind(typeof(int)).To(binding));
 		}
+
+		[Test ()]
+		public void UnsafePartialBinging()
+		{
+			IBindingContext context = TestsFactory.BindingContext();
+			IBindingRequirement requirement = BindingRequirements.Instance.With<float>();
+
+			context.Bind<float>().To(()=> 0.1f);
+			int extra = -1;
+			System.Func<float,int,int> func = (bindinded,nonBinded) => {extra = nonBinded;return 45;};
+
+			IBinding binding = new Binding(func,requirement);
+
+			context.Unsafe.Bind(typeof(int)).To(binding);
+
+			context.Get<int>(InnerBindingNames.Empty,32);
+
+			Assert.AreEqual(32,extra);
+		}
+
 	}
 
 }
