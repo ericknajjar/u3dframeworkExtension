@@ -269,6 +269,16 @@ namespace u3dExtensions.Tests.BindingContextTets
 			Assert.AreEqual(32,extra);
 		}
 
+		[Test ()]
+		public void GetItself()
+		{
+			var context =  TestsFactory.BindingContext();
+
+			IBindingContext meAgain = context.Get<IBindingContext>(InnerBindingNames.CurrentBindingContext);
+
+			Assert.AreEqual(context,meAgain);
+
+		}
 	}
 
 }

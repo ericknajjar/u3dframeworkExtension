@@ -12,11 +12,14 @@ namespace u3dExtensions.IOC
 			m_namedBindings = new Dictionary<IBindingName,ValueBindingContext>();
 			//Creating empty binding
 			GetBinding(new BindingName(InnerBindingNames.Empty),true);
+
 		}
 
 		static public IBindingContext Create()
 		{
-			return new BindingContext();
+			IBindingContext ret = new BindingContext();
+			ret.Bind<IBindingContext>(new BindingName(InnerBindingNames.CurrentBindingContext)).To(()=>ret);
+			return ret;
 		}
 
 		#region IBindingContext implementation
