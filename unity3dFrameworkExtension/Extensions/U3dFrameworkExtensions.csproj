@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>u3dExtensions.IOC</RootNamespace>
-    <AssemblyName>IOCExtensions</AssemblyName>
+    <RootNamespace>u3dExtensions</RootNamespace>
+    <AssemblyName>U3dFrameworkExtensions</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,41 +41,37 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="api\IBindingContext.cs" />
-    <Compile Include="api\IValueBindingContext.cs" />
-    <Compile Include="imp\BindingContext.cs" />
-    <Compile Include="errors\BindingNotFound.cs" />
-    <Compile Include="imp\InnerBindingNames.cs" />
-    <Compile Include="imp\BindingContextInnerClasses.cs" />
-    <Compile Include="imp\ValueBindingContext.cs" />
-    <Compile Include="api\IBinding.cs" />
-    <Compile Include="api\IBindingRequirement.cs" />
-    <Compile Include="imp\BindingRequirements.cs" />
-    <Compile Include="imp\UnsafeBindingContextAdapter.cs" />
-    <Compile Include="errors\BindingSelfRequirement.cs" />
-    <Compile Include="errors\IOCExtensionsException.cs" />
-    <Compile Include="imp\Binding.cs" />
-    <Compile Include="api\usafe\IUnsafeBindingContext.cs" />
-    <Compile Include="api\usafe\IUnsafeValueBindingContext.cs" />
-    <Compile Include="api\IBindingName.cs" />
-    <Compile Include="api\IBindingKey.cs" />
-    <Compile Include="imp\BindingKey.cs" />
-    <Compile Include="imp\BindingName.cs" />
-    <Compile Include="api\extensions\Extensions.cs" />
+    <Compile Include="IOC\api\extensions\Extensions.cs" />
+    <Compile Include="IOC\api\IBinding.cs" />
+    <Compile Include="IOC\api\IBindingContext.cs" />
+    <Compile Include="IOC\api\IBindingKey.cs" />
+    <Compile Include="IOC\api\IBindingName.cs" />
+    <Compile Include="IOC\api\IBindingRequirement.cs" />
+    <Compile Include="IOC\api\IValueBindingContext.cs" />
+    <Compile Include="IOC\api\usafe\IUnsafeBindingContext.cs" />
+    <Compile Include="IOC\api\usafe\IUnsafeValueBindingContext.cs" />
+    <Compile Include="IOC\errors\BindingNotFound.cs" />
+    <Compile Include="IOC\errors\BindingSelfRequirement.cs" />
+    <Compile Include="IOC\errors\IOCExtensionsException.cs" />
+    <Compile Include="IOC\imp\Binding.cs" />
+    <Compile Include="IOC\imp\BindingContext.cs" />
+    <Compile Include="IOC\imp\BindingContextInnerClasses.cs" />
+    <Compile Include="IOC\imp\BindingKey.cs" />
+    <Compile Include="IOC\imp\BindingName.cs" />
+    <Compile Include="IOC\imp\BindingRequirements.cs" />
+    <Compile Include="IOC\imp\InnerBindingNames.cs" />
+    <Compile Include="IOC\imp\UnsafeBindingContextAdapter.cs" />
+    <Compile Include="IOC\imp\ValueBindingContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="api\" />
-    <Folder Include="imp\" />
-    <Folder Include="errors\" />
-    <Folder Include="api\usafe\" />
-    <Folder Include="api\extensions\" />
+    <Folder Include="IOC\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
         <Policies>
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileFormatDefault" />
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
           <NameConventionPolicy>
             <Rules>
