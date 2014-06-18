@@ -20,8 +20,6 @@ namespace u3dExtensions.Tests.FuturesTests
 		[Test ()]
 		public void IntFutureMapPre ()
 		{
-		
-
 			int ret = -1;
 
 			m_future.Map((x) => ret = x);
@@ -170,6 +168,85 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.That(called);
 		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseFlatMap ()
+		{
+			bool called = false;
+
+			m_promise.FulfillError(new Exception());
+
+			m_future =	m_future.FlatMap((i) => Future.Success(i));
+			m_future.Recover((e) => called = true);
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseCompound ()
+		{
+			bool called = false;
+
+			IPromise<int> promisse2 = new Promise<int>();
+
+			m_future.Map((i) => promisse2.FulfillError(new Exception()));
+
+			m_promise.Fulfill(32);
+
+			promisse2.Future.Recover((e) => called = true);
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseFlatMapCompound ()
+		{
+			bool called = false;
+
+			IPromise<int> promisse2 = new Promise<int>();
+
+			m_future.Map((i) => promisse2.FulfillError(new Exception()));
+
+			m_promise.Fulfill(32);
+
+			m_future = m_future.FlatMap((i) => promisse2.Future);
+			m_future.Recover((e) => called = true);
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseFlatMapCompoundJustOnce ()
+		{
+			int callCount = 0;
+
+			IPromise<int> promisse2 = new Promise<int>();
+
+			m_future.Map((i) => promisse2.FulfillError(new Exception()));
+
+			m_promise.Fulfill(32);
+
+			m_future = m_future.FlatMap((i) => promisse2.Future);
+			m_future.Recover((e) => ++callCount);
+
+			Assert.AreEqual(1,callCount);
+		}
+
+
+		[Test ()]
+		public void IntFailureThroughPromiseMapChain ()
+		{
+			bool called = false;
+
+			m_future =	m_future.Map((i) => i).Map((i) => i);
+
+			m_promise.FulfillError(new Exception());
+
+			m_future.Recover((e) => called = true);
+
+			Assert.That(called);
+		}
+
 
 		[Test ()]
 		public void IntFailureThroughPromiseTwice ()

@@ -57,6 +57,8 @@ namespace u3dExtensions
 				FlushMapFunc();
 			}
 
+			Recover((e) => other.FlushErrorRecover(e));
+
 			return other;
 		}
 
@@ -71,7 +73,13 @@ namespace u3dExtensions
 		{
 			Future<K> other = new Future<K>();
 
-			Map((x) => flatMapFunc(x).Map((k) => other.Set(k))).Recover((e)=> other.FlushErrorRecover(e));
+
+			Map((x) =>{
+			
+				var map1 = flatMapFunc(x).Map((k) => other.Set(k));
+				return map1.Recover((e) => other.FlushErrorRecover(e));
+			
+			}).Recover((e)=> other.FlushErrorRecover(e));
 
 			return other;
 		}
