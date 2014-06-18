@@ -47,7 +47,6 @@
     <Compile Include="IOC\api\IBindingKey.cs" />
     <Compile Include="IOC\api\IBindingName.cs" />
     <Compile Include="IOC\api\IBindingRequirement.cs" />
-    <Compile Include="IOC\api\IValueBindingContext.cs" />
     <Compile Include="IOC\api\usafe\IUnsafeBindingContext.cs" />
     <Compile Include="IOC\api\usafe\IUnsafeValueBindingContext.cs" />
     <Compile Include="IOC\errors\BindingNotFound.cs" />
@@ -62,6 +61,7 @@
     <Compile Include="IOC\imp\InnerBindingNames.cs" />
     <Compile Include="IOC\imp\UnsafeBindingContextAdapter.cs" />
     <Compile Include="IOC\imp\ValueBindingContext.cs" />
+    <Compile Include="IOC\imp\IValueBindingContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
