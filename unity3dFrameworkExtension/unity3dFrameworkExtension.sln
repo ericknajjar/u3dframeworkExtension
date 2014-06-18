@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "IOCExtensionsTests\Tests.csproj", "{684213EC-11F7-49CC-AA50-79598462BF80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "U3dFrameworkExtensionsBase", "U3dFrameworkExtensionsBase\U3dFrameworkExtensionsBase.csproj", "{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "U3dFrameworkExtensions", "U3dFrameworkExtensions\U3dFrameworkExtensions.csproj", "{17531A0F-D082-45C0-8148-5E20716D2375}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "U3dFrameworkExtensions", "Extensions\U3dFrameworkExtensions.csproj", "{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "U3dFrameworkExtensionsBase", "U3dFrameworkExtensionsBase\U3dFrameworkExtensionsBase.csproj", "{6800A013-FB29-4A9C-BB63-B10853FA19EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,18 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17531A0F-D082-45C0-8148-5E20716D2375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17531A0F-D082-45C0-8148-5E20716D2375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17531A0F-D082-45C0-8148-5E20716D2375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17531A0F-D082-45C0-8148-5E20716D2375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6800A013-FB29-4A9C-BB63-B10853FA19EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6800A013-FB29-4A9C-BB63-B10853FA19EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6800A013-FB29-4A9C-BB63-B10853FA19EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6800A013-FB29-4A9C-BB63-B10853FA19EC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{684213EC-11F7-49CC-AA50-79598462BF80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{684213EC-11F7-49CC-AA50-79598462BF80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{684213EC-11F7-49CC-AA50-79598462BF80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{684213EC-11F7-49CC-AA50-79598462BF80}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = IOCExtensionsTests\Tests.csproj

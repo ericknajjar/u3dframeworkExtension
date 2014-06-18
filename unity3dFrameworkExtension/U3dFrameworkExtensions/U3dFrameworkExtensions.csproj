@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6800A013-FB29-4A9C-BB63-B10853FA19EC}</ProjectGuid>
+    <ProjectGuid>{17531A0F-D082-45C0-8148-5E20716D2375}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>u3dFramework</RootNamespace>
-    <AssemblyName>U3dFrameworkExtensionsBase</AssemblyName>
+    <RootNamespace>u3dFramework.IOC</RootNamespace>
+    <AssemblyName>U3dFrameworkExtensions</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -25,6 +25,7 @@
     </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -41,25 +42,45 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="errors\PromiseResetException.cs" />
-    <Compile Include="errors\U3dFrameworkExtensionException.cs" />
-    <Compile Include="Futures\api\IFuture.cs" />
-    <Compile Include="Futures\api\IPromise.cs" />
-    <Compile Include="Futures\imp\Future.cs" />
-    <Compile Include="Futures\imp\Promise.cs" />
-    <Compile Include="Futures\imp\Unit.cs" />
+    <Compile Include="IOC\api\IBinding.cs" />
+    <Compile Include="IOC\api\IBindingContext.cs" />
+    <Compile Include="IOC\api\IBindingKey.cs" />
+    <Compile Include="IOC\api\IBindingName.cs" />
+    <Compile Include="IOC\api\IBindingRequirement.cs" />
+    <Compile Include="IOC\api\extensions\Extensions.cs" />
+    <Compile Include="IOC\api\usafe\IUnsafeBindingContext.cs" />
+    <Compile Include="IOC\api\usafe\IUnsafeValueBindingContext.cs" />
+    <Compile Include="IOC\errors\BindingNotFound.cs" />
+    <Compile Include="IOC\errors\BindingSelfRequirement.cs" />
+    <Compile Include="IOC\errors\IOCExtensionsException.cs" />
+    <Compile Include="IOC\imp\Binding.cs" />
+    <Compile Include="IOC\imp\BindingContext.cs" />
+    <Compile Include="IOC\imp\BindingContextInnerClasses.cs" />
+    <Compile Include="IOC\imp\BindingKey.cs" />
+    <Compile Include="IOC\imp\BindingName.cs" />
+    <Compile Include="IOC\imp\BindingRequirements.cs" />
+    <Compile Include="IOC\imp\InnerBindingNames.cs" />
+    <Compile Include="IOC\imp\IValueBindingContext.cs" />
+    <Compile Include="IOC\imp\UnsafeBindingContextAdapter.cs" />
+    <Compile Include="IOC\imp\ValueBindingContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
         <Policies>
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedFlat" ResourceNamePolicy="FileFormatDefault" />
         </Policies>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Folder Include="Futures\" />
+    <Folder Include="IOC\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\U3dFrameworkExtensionsBase\U3dFrameworkExtensionsBase.csproj">
+      <Project>{6800A013-FB29-4A9C-BB63-B10853FA19EC}</Project>
+      <Name>U3dFrameworkExtensionsBase</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

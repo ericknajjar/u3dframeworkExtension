@@ -43,16 +43,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\U3dFrameworkExtensionsBase\U3dFrameworkExtensionsBase.csproj">
-      <Project>{A378DAE7-DF87-4E3D-BD31-FC2C1224E208}</Project>
-      <Name>U3dFrameworkExtensionsBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Extensions\U3dFrameworkExtensions.csproj">
-      <Project>{B4CAAEF4-5F9D-437E-BAD7-04F4E8326633}</Project>
-      <Name>U3dFrameworkExtensions</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="BindingContextTests\" />
     <Folder Include="BindingTests\" />
     <Folder Include="FuturesTests\" />
@@ -66,4 +56,14 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\U3dFrameworkExtensions\U3dFrameworkExtensions.csproj">
+      <Project>{17531A0F-D082-45C0-8148-5E20716D2375}</Project>
+      <Name>U3dFrameworkExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\U3dFrameworkExtensionsBase\U3dFrameworkExtensionsBase.csproj">
+      <Project>{6800A013-FB29-4A9C-BB63-B10853FA19EC}</Project>
+      <Name>U3dFrameworkExtensionsBase</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
