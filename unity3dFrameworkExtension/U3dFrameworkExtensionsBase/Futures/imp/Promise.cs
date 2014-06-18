@@ -23,11 +23,24 @@ namespace u3dExtensions
 
 		#endregion
 
+		void ThrowIfCantFulfill ()
+		{
+			if (m_future.Error != null || m_future.IsSet)
+				throw new PromiseResetException ();
+		}
+
 		public void Fulfill (T val)
 		{
-			if(m_future.IsSet) throw new PromiseResetException();
+			ThrowIfCantFulfill ();
 
 			m_future.Set(val);
+		}
+
+		public void FulfillError (Exception e)
+		{
+			ThrowIfCantFulfill ();
+
+			m_future.FlushErrorRecover(e);
 		}
 	}
 }

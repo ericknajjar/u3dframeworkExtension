@@ -91,7 +91,7 @@ namespace u3dExtensions
 		}
 		#endregion
 
-		void FlushErrorRecover(System.Exception error)
+		public void FlushErrorRecover(System.Exception error)
 		{
 			Error = error;
 			m_recoveryFunc(error);

@@ -158,6 +158,42 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.That(called);
 		}
+
+		[Test ()]
+		public void IntFailureThroughPromise ()
+		{
+			bool called = false;
+
+			m_promise.FulfillError(new Exception());
+
+			m_future.Recover((e) => called = true);
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseTwice ()
+		{
+			m_promise.FulfillError(new Exception());
+
+			Assert.Throws<PromiseResetException>(() => m_promise.FulfillError(new Exception()));
+		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseAlreadyFullfiled ()
+		{
+			m_promise.Fulfill(32);
+
+			Assert.Throws<PromiseResetException>(() => m_promise.FulfillError(new Exception()));
+		}
+
+		[Test ()]
+		public void IntFailureThroughPromiseWithError ()
+		{
+			m_promise.FulfillError(new Exception());
+
+			Assert.Throws<PromiseResetException>(() => m_promise.Fulfill(32));
+		}
 	}
 }
 
