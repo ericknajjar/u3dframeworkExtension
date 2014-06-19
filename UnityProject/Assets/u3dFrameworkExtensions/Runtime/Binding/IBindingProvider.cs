@@ -11,4 +11,6 @@ namespace u3dExtensions.Engine.Runtime
 	{
 		IList<IBindingProvider> Dependencies{get;}
 	}
+
+
 }
