@@ -83,16 +83,7 @@ namespace u3dExtensions
 
 			return other;
 		}
-
-		public IFuture<T> Recover<K> (Func<Exception, K> recoverFunc) where K:T
-		{
-			Future<T> other = new Future<T>();
-
-			Recover((e) =>{ other.Set(recoverFunc(e));});
-			Map((val) =>{ other.Set(val);});
-
-			return  other;
-		}
+			
 
 		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
 		{
@@ -107,16 +98,7 @@ namespace u3dExtensions
 
 			return this;
 		}
-
-		public IFuture<object> Recover (Func<Exception, object> recoverFunc)
-		{
-			Future<object> other = new Future<object>();
-
-			Recover((e) =>{ other.Set(recoverFunc(e));});
-			Map((val) =>{ other.Set(val);});
-
-			return other;
-		}
+			
 		#endregion
 
 		public void FlushErrorRecover(System.Exception error)
@@ -171,6 +153,16 @@ namespace u3dExtensions
 			Future<T> future = new Future<T>(e);
 		
 			return future;
+		}
+
+		public static IFuture<K> Recover<T,K>(this IFuture<T> me, Func<System.Exception, K> recoverFunc) where T:K
+		{
+			Future<K> other = new Future<K>();
+
+			me.Recover((e) =>{ other.Set(recoverFunc(e));});
+			me.Map((val) =>{ other.Set(val);});
+
+			return  other;
 		}
 	}
 }

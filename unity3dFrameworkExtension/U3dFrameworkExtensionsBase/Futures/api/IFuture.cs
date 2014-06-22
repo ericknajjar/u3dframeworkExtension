@@ -10,9 +10,6 @@ namespace u3dExtensions
 
 		IFuture<T> Recover(Action<System.Exception> recoverFunc);
 
-		IFuture<T> Recover<K>(System.Func<System.Exception,K> recoverFunc) where K:T;
-		IFuture<object> Recover(System.Func<System.Exception,object> recoverFunc);
-
 		IFuture<K> FlatMap<K> (System.Func<T,IFuture<K>> flatMapFunc);
 
 		bool IsSet{get;}

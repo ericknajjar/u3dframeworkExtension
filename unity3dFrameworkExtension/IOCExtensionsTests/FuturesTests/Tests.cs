@@ -10,6 +10,16 @@ namespace u3dExtensions.Tests.FuturesTests
 		IPromise<int> m_promise;
 		IFuture<int> m_future;
 
+		class A
+		{
+
+		}
+
+		class B: A
+		{
+
+		}
+
 		[SetUp]
 		public void Setup()
 		{
@@ -311,6 +321,33 @@ namespace u3dExtensions.Tests.FuturesTests
 			m_promise.FulfillError(new Exception());
 
 			Assert.AreEqual("33",other.Value);
+		}
+
+		[Test ()]
+		public void FutureSuccesRecoverRightObjectInheritance ()
+		{
+			var a = new A();
+			var b = new B();
+
+			var future = Future.Success(b);
+
+			var other = future.Map((x) => x).Recover((e) => a);
+
+
+			Assert.AreEqual(b,other.Value);
+		}
+
+		[Test ()]
+		public void FutureFailureRecoverRightObjectInheritance ()
+		{
+			var a = new A();
+			var b = new B();
+
+			var future = Future.Success(b);
+
+			var other = future.Map((x) =>{throw new Exception(); return x;}).Recover((e) => a);
+
+			Assert.AreEqual(a,other.Value);
 		}
 			
 	}
