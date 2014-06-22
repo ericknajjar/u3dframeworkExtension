@@ -13,11 +13,11 @@ namespace u3dExtensions.Tests.BindingContextTets
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			context.Bind<int>().To(()=> 45);
+			int expected = 45;
 
-			int ret = context.Get<int>();
+			context.Bind<int>().To(() => expected);
 
-			Assert.AreEqual(45,ret);
+			Assert.AreEqual(context.Get<int>(), expected);
 		}
 
 		[Test ()]
@@ -32,11 +32,12 @@ namespace u3dExtensions.Tests.BindingContextTets
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			context.Bind<int>("coisa").To(()=> 45);
+			int expected = 45;
+			string bindingName = "foo";
 
-			int ret = context.Get<int>("coisa");
+			context.Bind<int>(bindingName).To(() => expected);
 
-			Assert.AreEqual(45,ret);
+			Assert.AreEqual(context.Get<int>(bindingName), expected);
 		}
 
 		[Test ()]
@@ -44,27 +45,27 @@ namespace u3dExtensions.Tests.BindingContextTets
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			Assert.Throws<BindingNotFound>(() => context.Get<int>("coisa"));
+			Assert.Throws<BindingNotFound>(() => context.Get<int>("foo"));
 		}
 
 		[Test ()]
-		public void NamedBindingDiferentTypeError()
+		public void NamedBindingDifferentTypeError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			context.Bind<string>("coisa").To(()=> "string");
+			context.Bind<string>("foo").To(()=> "string");
 
-			Assert.Throws<BindingNotFound>(() => context.Get<int>("coisa"));
+			Assert.Throws<BindingNotFound>(() => context.Get<int>("foo"));
 		}
 
 		[Test ()]
-		public void NamedBindingDiferentNameError()
+		public void NamedBindingDifferentNameError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			context.Bind<int>("coisa").To(()=> 45);
+			context.Bind<int>("foo").To(()=> 45);
 
-			Assert.Throws<BindingNotFound>(() => context.Get<int>("coisa2"));
+			Assert.Throws<BindingNotFound>(() => context.Get<int>("notFoo"));
 		}
 
 		[Test ()]
@@ -72,13 +73,13 @@ namespace u3dExtensions.Tests.BindingContextTets
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			context.Bind<int>().With<string>().To((value)=> 45);
+			context.Bind<int>().With<string>().To((strParam)=> 45);
 
 			context.Bind<string>().To(()=> "uhul");
 
 			int ret = context.Get<int>();
 
-			Assert.AreEqual(45,ret);
+			Assert.AreEqual(ret, 45);
 		}
 
 		[Test ()]
@@ -98,14 +99,31 @@ namespace u3dExtensions.Tests.BindingContextTets
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			context.Bind<int>().With<string>("MyText").To((value)=> 45);
-			//context.Bind<int>().With<string>("MyText").To((value)=> 45);
+			int expected = 45;
+
+			context.Bind<int>().With<string>("MyText").To((value) => expected);
 
 			context.Bind<string>("MyText").To(()=> "uhul");
 
 			int ret = context.Get<int>();
 
-			Assert.AreEqual(45,ret);
+			Assert.AreEqual(ret, expected);
+		}
+		
+		[Test ()]
+		public void OneCorrectArgumentBinding()
+		{
+			IBindingContext context = TestsFactory.BindingContext();
+			
+			string parameter = "";
+			
+			context.Bind<int>().With<string>().To((value)=>{ parameter = value; return 45;});
+			
+			context.Bind<string>().To(()=> "uhul");
+			
+			context.Get<int>();
+			
+			Assert.AreEqual(parameter, "uhul");
 		}
 
 		[Test ()]
@@ -123,45 +141,27 @@ namespace u3dExtensions.Tests.BindingContextTets
 
 			context.Get<int>();
 
-			Assert.AreEqual("uhul2",parameter);
+			Assert.AreEqual(parameter, "uhul2");
 		}
 
 		[Test ()]
-		public void RightArgumentArgumentBinding()
-		{
-			IBindingContext context = TestsFactory.BindingContext();
-
-			string parameter = "";
-
-			context.Bind<int>().With<string>().To((value)=>{ parameter = value; return 45;});
-
-			context.Bind<string>().To(()=> "uhul");
-
-			context.Get<int>();
-
-			Assert.AreEqual("uhul",parameter);
-		}
-
-		[Test ()]
-		public void RequireIteselfError()
+		public void RequireItselfError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
 			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>().With<int>().To((value)=> 45) );
-
 		}
 
 		[Test ()]
-		public void RequireIteselWithSameNameError()
+		public void RequireItselfWithSameNameError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
 			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>("name").With<int>("name").To((value)=> 45));
-		
 		}
 
 		[Test ()]
-		public void RequireIteselWithDifferenNameNoError()
+		public void RequireItselfWithDifferentNamesNoError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
@@ -181,37 +181,35 @@ namespace u3dExtensions.Tests.BindingContextTets
 
 			int ret = context.Get<int>();
 
-			Assert.AreEqual(45,ret);
+			Assert.AreEqual(ret, 45);
 		}
 
 		[Test ()]
-		public void TwoRequireIteselWithSameNameError()
+		public void TwoRequireItseflWithSameNameError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>().With<string>().With<int>().To((str,flt)=> 45));
-
-
+			Assert.Throws<BindingSelfRequirement>( () => context.Bind<int>().With<string>().With<int>().To((str,i)=> 45));
 		}
 
 		[Test ()]
-		public void TowRequireIteselWithDifferenNameNoError()
+		public void TwoRequireItselfWithDifferentNamesNoError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			Assert.DoesNotThrow( () => context.Bind<int>("name").With<string>().With<int>("diferentName").To((str,flt)=> 45));
+			Assert.DoesNotThrow( () => context.Bind<int>("name").With<string>().With<int>("diferentName").To((str,i)=> 45));
 		}
 
 		[Test ()]
-		public void TowRequireIteselWithDifferenNameNoError2()
+		public void TwoRequireItselfWithDifferentNameNoError2()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
-			Assert.DoesNotThrow( () => context.Bind<int>("name").With<int>().With<int>().To((str,flt)=> 45));
+			Assert.DoesNotThrow( () => context.Bind<int>("name").With<int>().With<int>().To((i,j)=> 45));
 		}
 
 		[Test ()]
-		public void UnsafeSimpleBiding()
+		public void UnsafeSimpleBinding()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
@@ -220,11 +218,11 @@ namespace u3dExtensions.Tests.BindingContextTets
 
 			context.Unsafe.Bind(typeof(int)).To(binding);
 
-			Assert.AreEqual(45,context.Get<int>());
+			Assert.AreEqual(context.Get<int>(), 45);
 		}
 
 		[Test ()]
-		public void UnsafeNamedBiding()
+		public void UnsafeNamedBinding()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 
@@ -233,12 +231,11 @@ namespace u3dExtensions.Tests.BindingContextTets
 
 			context.Unsafe.Bind("name",typeof(int)).To(binding);
 
-			Assert.AreEqual(45,context.Get<int>("name"));
+			Assert.AreEqual(context.Get<int>("name"),45);
 		}
 
-
 		[Test ()]
-		public void UnsafeSelfRequiremetBidingError()
+		public void UnsafeSelfRequirementBindingError()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 			IBindingRequirement requirement = BindingRequirements.Instance.With<int>();
@@ -251,7 +248,7 @@ namespace u3dExtensions.Tests.BindingContextTets
 		}
 
 		[Test ()]
-		public void UnsafePartialBinging()
+		public void UnsafePartialBinding()
 		{
 			IBindingContext context = TestsFactory.BindingContext();
 			IBindingRequirement requirement = BindingRequirements.Instance.With<float>();
@@ -277,7 +274,6 @@ namespace u3dExtensions.Tests.BindingContextTets
 			IBindingContext meAgain = context.Get<IBindingContext>(InnerBindingNames.CurrentBindingContext);
 
 			Assert.AreEqual(context,meAgain);
-
 		}
 	}
 
