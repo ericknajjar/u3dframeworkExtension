@@ -69,22 +69,6 @@ namespace u3dExtensions
 			m_recoveryFunc = (e)=>{};
 		}
 
-		public IFuture<K> FlatMap<K> (Func<T, IFuture<K>> flatMapFunc)
-		{
-			Future<K> other = new Future<K>();
-
-
-			Map((x) =>{
-			
-				var map1 = flatMapFunc(x).Map((k) => other.Set(k));
-				return map1.Recover((e) => other.FlushErrorRecover(e));
-			
-			}).Recover((e)=> other.FlushErrorRecover(e));
-
-			return other;
-		}
-			
-
 		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
 		{
 			if(Error!=null)
@@ -163,6 +147,21 @@ namespace u3dExtensions
 			me.Map((val) =>{ other.Set(val);});
 
 			return  other;
+		}
+
+		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
+		{
+			Future<K> other = new Future<K>();
+
+
+			me.Map((x) =>{
+
+				var map1 = flatMapFunc(x).Map((k) => other.Set(k));
+				return map1.Recover((e) => other.FlushErrorRecover(e));
+
+			}).Recover((e)=> other.FlushErrorRecover(e));
+
+			return other;
 		}
 	}
 }
