@@ -315,6 +315,40 @@ namespace u3dExtensions.Tests.FuturesTests
 		}
 
 		[Test ()]
+		public void FutureSucessFlatRecoverRightValue ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Success(33));
+			m_promise.Fulfill(32);
+
+			Assert.AreEqual(32,other.Value);
+		}
+
+		[Test ()]
+		public void FutureFailureFlatRecoverRightValue ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Success(33));
+			m_promise.FulfillError(new Exception());
+
+			Assert.AreEqual(33,other.Value);
+		}
+
+
+		[Test ()]
+		public void FutureDoubleFailureFlatRecoveCalledWriteError ()
+		{
+			var error = new Exception();
+
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Failure<int>( error));
+			m_promise.FulfillError(new Exception());
+
+			bool called = false;
+			other.Recover((e) =>{called = error.Equals(e);});
+
+			Assert.That(called);
+		}
+
+
+		[Test ()]
 		public void FutureFailureRecoverRightObject ()
 		{
 			var other = m_future.Map((x) =>{ return x;}).Recover((e) => (object)"33");

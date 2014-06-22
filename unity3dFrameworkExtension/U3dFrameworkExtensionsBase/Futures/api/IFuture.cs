@@ -10,8 +10,6 @@ namespace u3dExtensions
 
 		IFuture<T> Recover(Action<System.Exception> recoverFunc);
 
-
-
 		bool IsSet{get;}
 
 		System.Exception Error{get;}

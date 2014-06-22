@@ -149,10 +149,25 @@ namespace u3dExtensions
 			return  other;
 		}
 
-		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
+		public static IFuture<K> FlatRecover<T,K>(this IFuture<T> me, Func<System.Exception, IFuture<K>> recoverFunc) where T:K
 		{
 			Future<K> other = new Future<K>();
 
+			me.Recover((e) =>
+			{ 
+					var future = recoverFunc(e);
+					future.Map((x) => other.Set(x));
+					future.Recover((e2) => other.FlushErrorRecover(e2));
+			});
+
+			me.Map((val) =>{ other.Set(val);});
+
+			return  other;
+		}
+
+		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
+		{
+			Future<K> other = new Future<K>();
 
 			me.Map((x) =>{
 
