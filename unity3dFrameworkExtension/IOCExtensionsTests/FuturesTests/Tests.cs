@@ -76,7 +76,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			IFuture<float> floatFuture = m_future.Map((x)=> x+1.5f);
 
-			floatFuture.Map((x) => {throw new Exception();}).Recover((e) => called = true);
+			floatFuture.Map((x) => {throw new Exception();}).Recover((e) =>{ called = true;});
 
 			m_promise.Fulfill(32);
 
@@ -102,7 +102,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			IFuture<int> success = Future.Failure<int>(new Exception());
 
-			success.Recover((e) => called = true);
+			success.Recover((e) =>{ called = true;});
 
 			Assert.That(called);
 		}
@@ -114,7 +114,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			IFuture<float> floatFuture = Future.Success(1.0f);
 
-			floatFuture.Map((x) => {throw new Exception();}).Recover((e) => called = true);
+			floatFuture.Map((x) => {throw new Exception();}).Recover((e) =>{ called = true;});
 
 			Assert.That(called);
 		}
@@ -128,7 +128,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			m_promise.Fulfill(32);
 
-			floatFuture.Map((x) => {throw new Exception();}).Recover((e) => called = true);
+			floatFuture.Map((x) => {throw new Exception();}).Recover((e) =>{ called = true;});
 
 			Assert.That(called);
 		}
@@ -152,7 +152,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			IFuture<int> success = Future.Success(32);
 
-			success.FlatMap((x) => {throw new Exception(); return Future.Success(99.0f);}).Map((x) => {}).Recover((e) => called = true);
+			success.FlatMap((x) => {throw new Exception(); return Future.Success(99.0f);}).Map((x) => {}).Recover((e) =>{ called = true;});
 
 			Assert.That(called);
 		}
@@ -164,7 +164,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			m_promise.FulfillError(new Exception());
 
-			m_future.Recover((e) => called = true);
+			m_future.Recover((e) =>{ called = true;});
 
 			Assert.That(called);
 		}
@@ -177,7 +177,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			m_promise.FulfillError(new Exception());
 
 			m_future =	m_future.FlatMap((i) => Future.Success(i));
-			m_future.Recover((e) => called = true);
+			m_future.Recover((e) => {called = true;});
 
 			Assert.That(called);
 		}
@@ -193,7 +193,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			m_promise.Fulfill(32);
 
-			promisse2.Future.Recover((e) => called = true);
+			promisse2.Future.Recover((e) => {called = true;});
 
 			Assert.That(called);
 		}
@@ -210,7 +210,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			m_promise.Fulfill(32);
 
 			m_future = m_future.FlatMap((i) => promisse2.Future);
-			m_future.Recover((e) => called = true);
+			m_future.Recover((e) => {called = true;});
 
 			Assert.That(called);
 		}
@@ -242,7 +242,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			m_promise.FulfillError(new Exception());
 
-			m_future.Recover((e) => called = true);
+			m_future.Recover((e) => {called = true;});
 
 			Assert.That(called);
 		}
@@ -271,6 +271,48 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.Throws<PromiseResetException>(() => m_promise.Fulfill(32));
 		}
+
+		[Test ()]
+		public void FutureChainMiddleFailuer ()
+		{
+			var other = m_future.Map((x) =>{ throw new Exception(); return x;});
+
+			bool called = false;
+			other.Recover((e) => {called = true;});
+
+			other.Map((w) => w).Recover((e) => {});
+
+			m_promise.Fulfill(32);
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void FutureSucessRecoverRightValue ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).Recover((e) => 33);
+			m_promise.Fulfill(32);
+
+			Assert.AreEqual(32,other.Value);
+		}
+
+		[Test ()]
+		public void FutureFailureRecoverRightValue ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).Recover((e) => 33);
+			m_promise.FulfillError(new Exception());
+
+			Assert.AreEqual(33,other.Value);
+		}
+
+		[Test ()]
+		public void FutureFailureRecoverRightObject ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).Recover((e) => (object)"33");
+			m_promise.FulfillError(new Exception());
+
+			Assert.AreEqual("33",other.Value);
+		}
+			
 	}
 }
 

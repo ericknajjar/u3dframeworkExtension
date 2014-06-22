@@ -84,6 +84,16 @@ namespace u3dExtensions
 			return other;
 		}
 
+		public IFuture<T> Recover<K> (Func<Exception, K> recoverFunc) where K:T
+		{
+			Future<T> other = new Future<T>();
+
+			Recover((e) =>{ other.Set(recoverFunc(e));});
+			Map((val) =>{ other.Set(val);});
+
+			return  other;
+		}
+
 		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
 		{
 			if(Error!=null)
@@ -96,6 +106,16 @@ namespace u3dExtensions
 			}
 
 			return this;
+		}
+
+		public IFuture<object> Recover (Func<Exception, object> recoverFunc)
+		{
+			Future<object> other = new Future<object>();
+
+			Recover((e) =>{ other.Set(recoverFunc(e));});
+			Map((val) =>{ other.Set(val);});
+
+			return other;
 		}
 		#endregion
 
@@ -133,6 +153,8 @@ namespace u3dExtensions
 			get;
 			private set;
 		}
+
+	
 	}
 
 	public static class Future
