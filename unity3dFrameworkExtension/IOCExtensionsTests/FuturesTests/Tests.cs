@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using u3dExtensions;
+using System.Collections.Generic;
 
 namespace u3dExtensions.Tests.FuturesTests
 {
@@ -290,7 +291,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			bool called = false;
 			other.Recover((e) => {called = true;});
 
-			other.Map((w) => w).Recover((e) => {});
+			other.Map ((w) => w).Recover((e) => {});
 
 			m_promise.Fulfill(32);
 			Assert.That(called);
@@ -382,6 +383,164 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = future.Map((x) =>{throw new Exception(); return x;}).Recover((e) => a);
 
 			Assert.AreEqual(a,other.Value);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicError ()
+		{
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NullReferenceException e) => (object)"34").Recover((e) => (object)"33");
+
+			m_promise.FulfillError(new NullReferenceException());
+
+			Assert.AreEqual("34",other.Value);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorCalled ()
+		{
+			bool called = false;
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NullReferenceException e) => {called = true;return (object)"34";});
+
+			m_promise.FulfillError(new NullReferenceException());
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorRightObj ()
+		{
+			bool called = false;
+			var error = new NullReferenceException();
+
+		
+			m_promise.FulfillError(error);
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NullReferenceException e) => {
+				called = error.Equals (e);
+			});
+
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorRightObj2 ()
+		{
+			bool called = false;
+			var error = new NullReferenceException();
+
+
+			m_promise.FulfillError(error);
+
+			Assert.DoesNotThrow (() => {
+
+				var other = m_future.Map ((x) => {
+					return x;
+				}).Recover ((System.NotSupportedException e) => {
+					called = error.Equals (e);
+				});
+
+			});
+				
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorRightObj2Twice ()
+		{
+
+			var error = new NotSupportedException();
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NotSupportedException e) => {
+
+			}).Recover((System.NotImplementedException e)=> {
+				return 3;
+			});
+
+			Assert.DoesNotThrow (() => {
+
+
+				m_promise.FulfillError(error);
+
+			});
+
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorOnlyOne ()
+		{
+			int called = 0;
+			var error = new NotSupportedException();
+
+			//m_future
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NotSupportedException e) => {
+
+				called++;
+
+			}).Recover((System.Exception e)=> {
+				called++;
+			});
+
+			m_promise.FulfillError(error);
+
+			Assert.AreEqual (1, called);
+
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorNoExceptionError ()
+		{
+			int called = 0;
+			int error = 1;
+
+			m_promise.FulfillError(error);
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((int e) => {
+
+				called++;
+
+			}).Recover((System.Exception e)=> {
+				called++;
+			});
+
+
+			Assert.AreEqual (1, called);
+
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorNoExceptionError2 ()
+		{
+			int called = 0;
+			List<int> error = new List<int>();
+
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((List<int> e) => {
+
+				called++;
+
+			});/*.Recover((System.Exception e)=> {
+				called++;
+			});*/
+
+			m_promise.FulfillError(error);
+
+			Assert.AreEqual (1, called);
+
 		}
 			
 	}

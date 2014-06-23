@@ -6,7 +6,7 @@ namespace u3dExtensions
 	{
 		IFuture<T> Future{get;}
 		void Fulfill(T val);
-		void FulfillError (Exception e);
+		void FulfillError<K> (K e);
 	}
 }
 
