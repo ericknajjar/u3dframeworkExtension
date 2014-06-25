@@ -452,6 +452,23 @@ namespace u3dExtensions.Tests.FuturesTests
 		}
 
 		[Test ()]
+		public void FutureChainErrorNotException ()
+		{
+			bool called = false;
+
+			m_promise.FulfillError(32);
+
+			var other = m_future.Map ((x) => {
+				return (object) "23423";
+
+			}).Recover ((int e) => {
+				called = true;
+			});
+
+			Assert.That(called);
+		}
+
+		[Test]
 		public void FuturePolymorphicErrorRightObj2Twice ()
 		{
 
@@ -474,7 +491,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 		}
 
-		[Test ()]
+		/*[Test ()]
 		public void FuturePolymorphicErrorOnlyOne ()
 		{
 			int called = 0;
@@ -495,7 +512,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.AreEqual (1, called);
 
-		}
+		}*/
 
 		[Test ()]
 		public void FuturePolymorphicErrorNoExceptionError ()
@@ -533,14 +550,72 @@ namespace u3dExtensions.Tests.FuturesTests
 
 				called++;
 
-			});/*.Recover((System.Exception e)=> {
-				called++;
-			});*/
+			});
 
 			m_promise.FulfillError(error);
 
 			Assert.AreEqual (1, called);
 
+		}
+
+		[Test]
+		public void ErrorWhenBothCallsFails()
+		{
+	
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
+
+			var error = new NotSupportedException();
+
+			var future = promise1.Future.Map((x) => x).FlatRecover((NotSupportedException e) => promise2.Future);
+
+			promise1.FulfillError(error);
+			promise2.FulfillError(error);
+
+			Assert.IsNotNull(future.Error);
+		}
+
+		[Test]
+		public void ErrorWhenBothCallsFailsCalledOrder1()
+		{
+
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
+
+			var error = new NotSupportedException();
+
+			var future = promise1.Future.Map((x) => x).FlatRecover((NotSupportedException e) => {return promise2.Future;});
+
+			bool called = false;
+
+			future.Recover((e) => called = true);
+
+
+			promise1.FulfillError(error);
+			promise2.FulfillError(error);
+
+			Assert.That(called);
+		}
+
+		[Test]
+		public void ErrorWhenBothCallsFailsCalledOrder2()
+		{
+
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
+
+			var error = new NotSupportedException();
+
+			var future = promise1.Future.Map((x) => x).FlatRecover((NotSupportedException e) => {return promise2.Future;});
+
+			bool called = false;
+
+			future.Recover((e) => called = true);
+
+			promise2.FulfillError(error);
+			promise1.FulfillError(error);
+
+			Assert.That(called);
 		}
 			
 	}

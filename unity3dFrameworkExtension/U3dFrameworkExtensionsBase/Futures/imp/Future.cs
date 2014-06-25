@@ -113,12 +113,10 @@ namespace u3dExtensions
 		
 			foreach (var pair in m_recoverPairs) 
 			{
-				Console.WriteLine (pair.ArgType+" "+error.GetType());
-
 				if (pair.ArgType.Equals(error.GetType()) || error.GetType().IsSubclassOf(pair.ArgType))
 				{
 					pair.RecoveryFunc (Error);
-					break;
+					//break;
 				}
 
 			}
@@ -202,6 +200,22 @@ namespace u3dExtensions
 					var future = recoverFunc(e);
 					future.Map((x) => other.Set(x));
 					future.Recover((e2) => other.FlushErrorRecover(e2));
+			});
+
+			me.Map((val) =>{ other.Set(val);});
+
+			return  other;
+		}
+
+		public static IFuture<K> FlatRecover<T,K,W>(this IFuture<T> me, Func<W, IFuture<K>> recoverFunc) where T:K
+		{
+			Future<K> other = new Future<K>();
+
+			me.Recover((W e) =>
+			{ 
+				var future = recoverFunc(e);
+				future.Map((x) => other.Set(x));
+				future.Recover((e2) => other.FlushErrorRecover(e2));
 			});
 
 			me.Map((val) =>{ other.Set(val);});
