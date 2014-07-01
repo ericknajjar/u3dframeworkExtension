@@ -9,7 +9,7 @@ namespace u3dExtensions.IOC
 
 	public interface IValueBindingContext<T>
 	{
-		void To<K>(System.Func<K> func) where K:T;
+		void To(System.Func<T> func);
 
 		IValueBindingContext<T,K> With<K> ();
 		IValueBindingContext<T,K> With<K> (object name);
@@ -17,7 +17,7 @@ namespace u3dExtensions.IOC
 
 	public interface IValueBindingContext<T, J>  
 	{
-		void To<K>(System.Func<J,K> func) where K:T;
+		void To(System.Func<J, T> func);
 
 		IValueBindingContext<T,J,K> With<K> ();
 		IValueBindingContext<T,J,K> With<K> (IBindingName name);
@@ -26,7 +26,7 @@ namespace u3dExtensions.IOC
 
 	public interface IValueBindingContext<T, J, K>  
 	{
-		void To<W>(System.Func<J,K,W> func) where W:T;
+		void To(System.Func<J,K,T> func);
 	}
 }
 

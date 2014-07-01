@@ -3,11 +3,12 @@ using System;
 using u3dExtensions.IOC;
 using u3dExtensions.IOC.extesions;
 
-namespace u3dExtensions.Tests.BindingContextTets
+namespace u3dExtensions.Tests.BindingContextTests
 {
 	[TestFixture ()]
 	public class Tests
 	{
+
 		[Test ()]
 		public void BindingSimpleInt ()
 		{
@@ -275,6 +276,41 @@ namespace u3dExtensions.Tests.BindingContextTets
 
 			Assert.AreEqual(context,meAgain);
 		}
+
+
+		public T TypedGet<T> (IBindingContext context)
+		{
+			return context.Get<T>();
+		}
+
+		public T TypedInterfaceGet<T> (IBindingContext context) where T:ITestInterface
+		{
+			return context.Get<T>();
+		}
+
+		[Test ()]
+		public void TypedGetTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			
+			context.Bind<int> ().To (() => 42);
+
+			Assert.DoesNotThrow(() => TypedGet<int>(context) );
+		}
+
+		[Test ()]
+		public void TypedInterfaceGetTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			
+			var bind = context.Bind<ITestInterface> ();
+
+			bind.To (() => new TestClass());
+			
+			Assert.DoesNotThrow(() => TypedGet<ITestInterface>(context) );
+		}
+
+
 	}
 
 }
