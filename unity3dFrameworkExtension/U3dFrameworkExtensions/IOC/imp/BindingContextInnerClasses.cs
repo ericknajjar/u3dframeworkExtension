@@ -16,9 +16,9 @@ namespace u3dExtensions.IOC
 
 			#region IValueBindingContext implementation
 
-			void IValueBindingContext<T>.To<K> (Func<K> func)
+			void IValueBindingContext<T>.To (Func<T> func)
 			{
-				m_adaptee.To<K>(func);
+				m_adaptee.To<T>(func);
 			}
 		
 			IValueBindingContext<T,K> IValueBindingContext<T>.With<K> ()
@@ -72,11 +72,11 @@ namespace u3dExtensions.IOC
 			}
 
 			#region IValueBindingContext implementation
-			void IValueBindingContext<T, J>.To<K> (Func<J, K> func)
+			void IValueBindingContext<T, J>.To (Func<J, T> func)
 			{
 				var binding = new Binding(func, Requirements().ToArray());
 
-				m_adaptee.To<K>(binding);
+				m_adaptee.To<T>(binding);
 			}
 
 			public List<IBindingRequirement> Requirements()
@@ -122,11 +122,11 @@ namespace u3dExtensions.IOC
 
 			#region IValueBindingContext implementation
 
-			void IValueBindingContext<T, J, K>.To<W> (Func<J,K, W> func) 
+			void IValueBindingContext<T, J, K>.To (Func<J,K,T> func) 
 			{
 				var binding = new Binding(func, Requirements().ToArray());
 
-				m_adaptee.To<W>(binding);
+				m_adaptee.To<T>(binding);
 			}
 
 			#endregion
