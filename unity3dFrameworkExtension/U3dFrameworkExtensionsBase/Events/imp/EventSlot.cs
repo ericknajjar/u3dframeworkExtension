@@ -139,7 +139,7 @@ namespace u3dFramework.Events
 
 		public void Register (IEventListener<T,K,J,W> listener)
 		{
-			throw new NotImplementedException ();
+			m_listeners.AddLast(listener);
 		}
 
 		#endregion

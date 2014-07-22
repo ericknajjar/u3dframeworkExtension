@@ -14,12 +14,12 @@ namespace u3dFramework.Events
 			});
 		}
 
-		public static IEventListener Ever(Action callback, object target)
+		public static IEventListener Ever(Action callback)
 		{
 			return new DelegateEventListener(callback);
 		}
 
-		public static IEventListener Auto(Action callback, object target)
+		public static IEventListener Auto(Action callback)
 		{
 			return LifeTime(callback,callback.Target);
 		}
@@ -40,12 +40,12 @@ namespace u3dFramework.Events
 			});
 		}
 
-		public static IEventListener<T> Ever<T>(Action<T> callback, object target)
+		public static IEventListener<T> Ever<T>(Action<T> callback)
 		{
 			return new DelegateEventListener<T>(callback);
 		}
 
-		public static IEventListener<T> Auto<T>(Action<T> callback, object target)
+		public static IEventListener<T> Auto<T>(Action<T> callback)
 		{
 			return LifeTime(callback,callback.Target);
 		}
@@ -66,12 +66,12 @@ namespace u3dFramework.Events
 			});
 		}
 
-		public static IEventListener<T,K> Ever<T,K>(Action<T,K> callback, object target)
+		public static IEventListener<T,K> Ever<T,K>(Action<T,K> callback)
 		{
 			return new DelegateEventListener<T,K>(callback);
 		}
 
-		public static IEventListener<T,K> Auto<T,K>(Action<T,K> callback, object target)
+		public static IEventListener<T,K> Auto<T,K>(Action<T,K> callback)
 		{
 			return LifeTime(callback,callback.Target);
 		}
@@ -92,12 +92,12 @@ namespace u3dFramework.Events
 			});
 		}
 
-		public static IEventListener<T,K,J> Ever<T,K,J>(Action<T,K,J> callback, object target)
+		public static IEventListener<T,K,J> Ever<T,K,J>(Action<T,K,J> callback)
 		{
 			return new DelegateEventListener<T,K,J>(callback);
 		}
 
-		public static IEventListener<T,K,J> Auto<T,K,J>(Action<T,K,J> callback, object target)
+		public static IEventListener<T,K,J> Auto<T,K,J>(Action<T,K,J> callback)
 		{
 			return LifeTime(callback,callback.Target);
 		}
@@ -118,12 +118,12 @@ namespace u3dFramework.Events
 			});
 		}
 
-		public static IEventListener<T,K,J,W> Ever<T,K,J,W>(Action<T,K,J,W> callback, object target)
+		public static IEventListener<T,K,J,W> Ever<T,K,J,W>(Action<T,K,J,W> callback)
 		{
 			return new DelegateEventListener<T,K,J,W>(callback);
 		}
 
-		public static IEventListener<T,K,J,W> Auto<T,K,J,W>(Action<T,K,J,W> callback, object target)
+		public static IEventListener<T,K,J,W> Auto<T,K,J,W>(Action<T,K,J,W> callback)
 		{
 			return LifeTime(callback,callback.Target);
 		}
