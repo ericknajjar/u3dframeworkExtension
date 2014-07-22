@@ -7,8 +7,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>u3dExtensions.Tests</RootNamespace>
     <AssemblyName>IOCExtensionsTests</AssemblyName>
-    <ProductVersion>12.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -45,12 +43,14 @@
     <Compile Include="FuturesTests\Tests.cs" />
     <Compile Include="BindingContextTests\ITestInterface.cs" />
     <Compile Include="BindingContextTests\TestClass.cs" />
+    <Compile Include="EventTests\Tests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="BindingContextTests\" />
     <Folder Include="BindingTests\" />
     <Folder Include="FuturesTests\" />
+    <Folder Include="EventTests\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

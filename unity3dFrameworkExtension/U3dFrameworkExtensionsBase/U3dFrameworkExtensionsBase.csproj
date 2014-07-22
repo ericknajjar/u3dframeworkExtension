@@ -18,7 +18,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-	<CustomCommands>
+    <CustomCommands>
       <CustomCommands>
         <Command type="AfterBuild" command="python ../copyFiles.py ${TargetFile} ../UnityProject/Assets/u3dFrameworkExtensions/${TargetName}" workingdir="${SolutionDir}" />
       </CustomCommands>
@@ -30,7 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-	<CustomCommands>
+    <CustomCommands>
       <CustomCommands>
         <Command type="AfterBuild" command="python ../copyFiles.py ${TargetFile} ../UnityProject/Assets/u3dFrameworkExtensions/${TargetName}" workingdir="${SolutionDir}" />
       </CustomCommands>
@@ -48,6 +48,12 @@
     <Compile Include="Futures\imp\Future.cs" />
     <Compile Include="Futures\imp\Promise.cs" />
     <Compile Include="Futures\imp\Unit.cs" />
+    <Compile Include="Events\imp\EventSlot.cs" />
+    <Compile Include="Events\api\IEventRegister.cs" />
+    <Compile Include="Events\api\IEventTrigger.cs" />
+    <Compile Include="Events\api\IEventListener.cs" />
+    <Compile Include="Events\imp\DelegateEventListener.cs" />
+    <Compile Include="Events\imp\DelegateEventListeners.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -61,5 +67,8 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="Futures\" />
+    <Folder Include="Events\" />
+    <Folder Include="Events\imp\" />
+    <Folder Include="Events\api\" />
   </ItemGroup>
 </Project>
