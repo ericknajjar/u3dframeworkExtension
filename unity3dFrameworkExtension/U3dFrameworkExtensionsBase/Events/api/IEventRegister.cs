@@ -43,6 +43,16 @@ namespace u3dFramework.Events
 		{
 			me.Register(new DelegateEventListener<T,J>(callback));
 		}
+
+		public static void Register<T,J,K>(this IEventRegister<T,J,K> me, System.Action<T,J,K> callback)
+		{
+			me.Register(new DelegateEventListener<T,J,K>(callback));
+		}
+
+		public static void Register<T,J,K,W>(this IEventRegister<T,J,K,W> me, System.Action<T,J,K,W> callback)
+		{
+			me.Register(new DelegateEventListener<T,J,K,W>(callback));
+		}
 	}
 		
 }

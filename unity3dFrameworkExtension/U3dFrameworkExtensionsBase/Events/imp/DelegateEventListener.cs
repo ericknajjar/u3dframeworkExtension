@@ -92,5 +92,65 @@ namespace u3dFramework.Events
 		}
 		#endregion
 	}
+
+	public class DelegateEventListener<T,J,K>: IEventListener<T,J,K>
+	{
+		Action<T,J,K> m_calback;
+		Func<bool> m_deadCall;
+
+		public DelegateEventListener (Action<T,J,K> callback,Func<bool> deadCall)
+		{
+			m_calback = callback;
+			m_deadCall = deadCall;
+		}
+
+		public DelegateEventListener (Action<T,J,K> callback): this(callback,() => false)
+		{
+
+		}
+
+		#region IEventListener implementation
+
+		public void Call (T arg1, J arg2,K arg3)
+		{
+			m_calback(arg1,arg2,arg3);
+		}
+
+		public bool IsDead ()
+		{
+			return m_deadCall();
+		}
+		#endregion
+	}
+
+	public class DelegateEventListener<T,J,K,W>: IEventListener<T,J,K,W>
+	{
+		Action<T,J,K,W> m_calback;
+		Func<bool> m_deadCall;
+
+		public DelegateEventListener (Action<T,J,K,W> callback,Func<bool> deadCall)
+		{
+			m_calback = callback;
+			m_deadCall = deadCall;
+		}
+
+		public DelegateEventListener (Action<T,J,K,W> callback): this(callback,() => false)
+		{
+
+		}
+
+		#region IEventListener implementation
+
+		public void Call (T arg1, J arg2,K arg3,W arg4)
+		{
+			m_calback(arg1,arg2,arg3,arg4);
+		}
+
+		public bool IsDead ()
+		{
+			return m_deadCall();
+		}
+		#endregion
+	}
 }
 
