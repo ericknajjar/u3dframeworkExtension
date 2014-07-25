@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using u3dFramework.Events;
+using u3dExtensions.Events;
 
 namespace u3dExtensions.Tests.EventTests
 {
@@ -133,7 +133,7 @@ namespace u3dExtensions.Tests.EventTests
 
 			{
 				TestGarbage garbage = new TestGarbage(list);
-				var listener = DelegateEventListeners.LifeTime(garbage.Callback,garbage);
+				var listener = DelegateEventListeners.LifeTime((t)=> t.Callback(),garbage);
 				slot.Register(listener);
 			}
 		
@@ -142,6 +142,90 @@ namespace u3dExtensions.Tests.EventTests
 			slot.Trigger();
 
 			Assert.AreEqual(0,list.Count);
+		}
+
+		[Test ()]
+		public void LifeTimeEventListenerStillAlive()
+		{
+			var slot = new EventSlot();
+			List<int> list = new List<int>();
+
+
+			TestGarbage garbage = new TestGarbage(list);
+
+			var listener = DelegateEventListeners.LifeTime((t)=> t.Callback(),garbage);
+			slot.Register(listener);
+
+
+			GC.Collect();
+
+			slot.Trigger();
+			garbage.Nothing = 2;
+			Assert.AreEqual(1,list.Count);
+		}
+
+		[Test ()]
+		public void WeakEventListenerDead()
+		{
+			List<int> list = new List<int>();
+
+			WeakEventListener<TestGarbage> listener;
+			{
+				 var garbage = new TestGarbage(list);
+
+				listener = new WeakEventListener<TestGarbage>(garbage,(target) =>{} );
+			}
+
+			GC.Collect();
+			Assert.That(listener.IsDead());
+		}
+
+		[Test ()]
+		public void WeakEventListenerDead1()
+		{
+			List<int> list = new List<int>();
+
+			WeakEventListener<TestGarbage,int> listener;
+			{
+				var garbage = new TestGarbage(list);
+
+				listener = new WeakEventListener<TestGarbage,int>(garbage,(target,i) =>{} );
+			}
+
+			GC.Collect();
+			Assert.That(listener.IsDead());
+		}
+
+		[Test ()]
+		public void WeakEventListenerDead2()
+		{
+			List<int> list = new List<int>();
+
+			WeakEventListener<TestGarbage,int,int> listener;
+			{
+				var garbage = new TestGarbage(list);
+
+				listener = new WeakEventListener<TestGarbage,int,int>(garbage,(target,i,i2) =>{} );
+			}
+
+			GC.Collect();
+			Assert.That(listener.IsDead());
+		}
+
+		[Test ()]
+		public void WeakEventListenerDead3()
+		{
+			List<int> list = new List<int>();
+
+			WeakEventListener<TestGarbage,int,int,int> listener;
+			{
+				var garbage = new TestGarbage(list);
+
+				listener = new WeakEventListener<TestGarbage,int,int,int>(garbage,(target,i,i2,i3) =>{} );
+			}
+
+			GC.Collect();
+			Assert.That(listener.IsDead());
 		}
 
 		[Test ()]
@@ -190,7 +274,7 @@ namespace u3dExtensions.Tests.EventTests
 				m_list = list;
 			}
 
-
+			public int Nothing{get; set;}
 			public void Callback()
 			{
 				m_list.Add(1);

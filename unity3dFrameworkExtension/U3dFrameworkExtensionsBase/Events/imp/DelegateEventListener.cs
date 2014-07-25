@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace u3dFramework.Events
+namespace u3dExtensions.Events
 {
 	public class DelegateEventListener: IEventListener
 	{

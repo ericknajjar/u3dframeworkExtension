@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace u3dFramework.Events
+namespace u3dExtensions.Events
 {
 	public class EventSlot: IEventRegister,IEventTrigger
 	{
