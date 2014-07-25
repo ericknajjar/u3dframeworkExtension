@@ -80,8 +80,10 @@ namespace u3dExtensions
 
 		void FlushMapFunc()
 		{
-			m_mapFunc(Value);
+			var localMap = m_mapFunc;
 			m_mapFunc = (x) =>{};
+			localMap(Value);
+	
 			m_recoverPairs.Clear ();
 		}
 
@@ -109,20 +111,25 @@ namespace u3dExtensions
 
 		public void FlushErrorRecover(object error)
 		{
-			Error = error;
-		
-			foreach (var pair in m_recoverPairs) 
+			try
 			{
-				if (pair.ArgType.Equals(error.GetType()) || error.GetType().IsSubclassOf(pair.ArgType))
+				Error = error;
+
+				foreach (var pair in m_recoverPairs) 
 				{
-					pair.RecoveryFunc (Error);
-					//break;
+					if (pair.ArgType.Equals(error.GetType()) || error.GetType().IsSubclassOf(pair.ArgType))
+					{
+						pair.RecoveryFunc (Error);
+						//break;
+					}
 				}
-
+					
 			}
-
-			m_recoverPairs.Clear ();
-			m_mapFunc = (x)=>{};
+			finally
+			{
+				m_recoverPairs.Clear ();
+				m_mapFunc = (x)=>{};
+			}
 		}
 
 		public void Set(T value) 

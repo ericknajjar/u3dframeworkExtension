@@ -617,7 +617,43 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.That(called);
 		}
-			
+
+		[Test, Timeout(2000)]
+		public void MappingAfutureInsideItself()
+		{
+			m_promise.Fulfill(32);
+
+			m_future.Map((i) =>{
+
+				m_future.Map((i2) =>{});
+			});
+		}
+
+		[Test, Timeout(2000)]
+		public void MappingAfutureInsideItselfReturn()
+		{
+			m_promise.Fulfill(32);
+
+			var future = m_future.Map((i) =>{
+
+				m_future.Map((i2) =>{});
+				return 33;
+			});
+
+			Assert.AreEqual(33,future.Value);
+		}
+
+		[Test, Timeout(2000)]
+		public void RecoverfutureInsideItself()
+		{
+			m_promise.FulfillError(new Exception());
+
+			m_future.Recover((e) =>{
+
+				m_future.Recover((e2) =>{});
+			});
+				
+		}			
 	}
 }
 
