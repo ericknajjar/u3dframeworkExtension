@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace u3dExtensions
 {
@@ -6,7 +8,21 @@ namespace u3dExtensions
 	{
 	
 		Action<T> m_mapFunc = (t) => {};
-		Action<System.Exception> m_recoveryFunc = e=>{};
+
+		Queue<RecoverPair> m_recoverPairs = new Queue<RecoverPair>();
+	
+		class RecoverPair
+		{
+			public Type ArgType;
+			public Action<object> RecoveryFunc;
+
+			public RecoverPair (Type argType, Action<object> recoveryFunc)
+			{
+				this.ArgType = argType;
+				this.RecoveryFunc = recoveryFunc;
+			}
+			
+		}
 
 		internal Future (): this(null)
 		{
@@ -57,56 +73,63 @@ namespace u3dExtensions
 				FlushMapFunc();
 			}
 
-			Recover((e) => other.FlushErrorRecover(e));
+			Recover((object e) => other.FlushErrorRecover(e));
 
 			return other;
 		}
 
 		void FlushMapFunc()
 		{
-			m_mapFunc(Value);
+			var localMap = m_mapFunc;
 			m_mapFunc = (x) =>{};
-			m_recoveryFunc = (e)=>{};
+			localMap(Value);
+	
+			m_recoverPairs.Clear ();
 		}
-
-		public IFuture<K> FlatMap<K> (Func<T, IFuture<K>> flatMapFunc)
-		{
-			Future<K> other = new Future<K>();
-
-
-			Map((x) =>{
-			
-				var map1 = flatMapFunc(x).Map((k) => other.Set(k));
-				return map1.Recover((e) => other.FlushErrorRecover(e));
-			
-			}).Recover((e)=> other.FlushErrorRecover(e));
-
-			return other;
-		}
-			
 
 		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
 		{
+			return Recover<System.Exception> (recoverFunc);
+		}
+
+		public IFuture<T> Recover<K> (Action<K> recoverFunc)
+		{
 			if(Error!=null)
 			{
-				recoverFunc(Error);
+				if(Error is K)
+					recoverFunc((K)(object)Error);
 			}
 			else
 			{
-				m_recoveryFunc+=recoverFunc;
+				var recoverPair = new RecoverPair (typeof(K), ((obj) => recoverFunc ((K)obj)));
+				m_recoverPairs.Enqueue (recoverPair);
 			}
 
 			return this;
 		}
-			
 		#endregion
 
-		public void FlushErrorRecover(System.Exception error)
+		public void FlushErrorRecover(object error)
 		{
-			Error = error;
-			m_recoveryFunc(error);
-			m_recoveryFunc = (e)=>{};
-			m_mapFunc = (x)=>{};
+			try
+			{
+				Error = error;
+
+				foreach (var pair in m_recoverPairs) 
+				{
+					if (pair.ArgType.Equals(error.GetType()) || error.GetType().IsSubclassOf(pair.ArgType))
+					{
+						pair.RecoveryFunc (Error);
+						//break;
+					}
+				}
+					
+			}
+			finally
+			{
+				m_recoverPairs.Clear ();
+				m_mapFunc = (x)=>{};
+			}
 		}
 
 		public void Set(T value) 
@@ -125,7 +148,7 @@ namespace u3dExtensions
 			private set;
 		}
 
-		public Exception Error
+		public object Error
 		{
 			get;
 			private set;
@@ -163,6 +186,62 @@ namespace u3dExtensions
 			me.Map((val) =>{ other.Set(val);});
 
 			return  other;
+		}
+
+		public static IFuture<K> Recover<T,K,W>(this IFuture<T> me, Func<W, K> recoverFunc) where T:K
+		{
+			Future<K> other = new Future<K>();
+
+			me.Recover((W e) =>{ other.Set(recoverFunc(e));});
+			me.Map((val) =>{ other.Set(val);});
+
+			return  other;
+		}
+
+		public static IFuture<K> FlatRecover<T,K>(this IFuture<T> me, Func<System.Exception, IFuture<K>> recoverFunc) where T:K
+		{
+			Future<K> other = new Future<K>();
+
+			me.Recover((e) =>
+			{ 
+					var future = recoverFunc(e);
+					future.Map((x) => other.Set(x));
+					future.Recover((e2) => other.FlushErrorRecover(e2));
+			});
+
+			me.Map((val) =>{ other.Set(val);});
+
+			return  other;
+		}
+
+		public static IFuture<K> FlatRecover<T,K,W>(this IFuture<T> me, Func<W, IFuture<K>> recoverFunc) where T:K
+		{
+			Future<K> other = new Future<K>();
+
+			me.Recover((W e) =>
+			{ 
+				var future = recoverFunc(e);
+				future.Map((x) => other.Set(x));
+				future.Recover((e2) => other.FlushErrorRecover(e2));
+			});
+
+			me.Map((val) =>{ other.Set(val);});
+
+			return  other;
+		}
+
+		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
+		{
+			Future<K> other = new Future<K>();
+
+			me.Map((x) =>{
+
+				var map1 = flatMapFunc(x).Map((k) => other.Set(k));
+				return map1.Recover((e) => other.FlushErrorRecover(e));
+
+			}).Recover((e)=> other.FlushErrorRecover(e));
+
+			return other;
 		}
 	}
 }

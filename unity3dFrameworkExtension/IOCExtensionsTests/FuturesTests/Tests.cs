@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using u3dExtensions;
+using System.Collections.Generic;
 
 namespace u3dExtensions.Tests.FuturesTests
 {
@@ -290,7 +291,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			bool called = false;
 			other.Recover((e) => {called = true;});
 
-			other.Map((w) => w).Recover((e) => {});
+			other.Map ((w) => w).Recover((e) => {});
 
 			m_promise.Fulfill(32);
 			Assert.That(called);
@@ -313,6 +314,40 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.AreEqual(33,other.Value);
 		}
+
+		[Test ()]
+		public void FutureSucessFlatRecoverRightValue ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Success(33));
+			m_promise.Fulfill(32);
+
+			Assert.AreEqual(32,other.Value);
+		}
+
+		[Test ()]
+		public void FutureFailureFlatRecoverRightValue ()
+		{
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Success(33));
+			m_promise.FulfillError(new Exception());
+
+			Assert.AreEqual(33,other.Value);
+		}
+
+
+		[Test ()]
+		public void FutureDoubleFailureFlatRecoveCalledWriteError ()
+		{
+			var error = new Exception();
+
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Failure<int>( error));
+			m_promise.FulfillError(new Exception());
+
+			bool called = false;
+			other.Recover((e) =>{called = error.Equals(e);});
+
+			Assert.That(called);
+		}
+
 
 		[Test ()]
 		public void FutureFailureRecoverRightObject ()
@@ -349,7 +384,276 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.AreEqual(a,other.Value);
 		}
-			
+
+		[Test ()]
+		public void FuturePolymorphicError ()
+		{
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NullReferenceException e) => (object)"34").Recover((e) => (object)"33");
+
+			m_promise.FulfillError(new NullReferenceException());
+
+			Assert.AreEqual("34",other.Value);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorCalled ()
+		{
+			bool called = false;
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NullReferenceException e) => {called = true;return (object)"34";});
+
+			m_promise.FulfillError(new NullReferenceException());
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorRightObj ()
+		{
+			bool called = false;
+			var error = new NullReferenceException();
+
+		
+			m_promise.FulfillError(error);
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NullReferenceException e) => {
+				called = error.Equals (e);
+			});
+
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorRightObj2 ()
+		{
+			bool called = false;
+			var error = new NullReferenceException();
+
+
+			m_promise.FulfillError(error);
+
+			Assert.DoesNotThrow (() => {
+
+				var other = m_future.Map ((x) => {
+					return x;
+				}).Recover ((System.NotSupportedException e) => {
+					called = error.Equals (e);
+				});
+
+			});
+				
+		}
+
+		[Test ()]
+		public void FutureChainErrorNotException ()
+		{
+			bool called = false;
+
+			m_promise.FulfillError(32);
+
+			var other = m_future.Map ((x) => {
+				return (object) "23423";
+
+			}).Recover ((int e) => {
+				called = true;
+			});
+
+			Assert.That(called);
+		}
+
+		[Test]
+		public void FuturePolymorphicErrorRightObj2Twice ()
+		{
+
+			var error = new NotSupportedException();
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NotSupportedException e) => {
+
+			}).Recover((System.NotImplementedException e)=> {
+				return 3;
+			});
+
+			Assert.DoesNotThrow (() => {
+
+
+				m_promise.FulfillError(error);
+
+			});
+
+		}
+
+		/*[Test ()]
+		public void FuturePolymorphicErrorOnlyOne ()
+		{
+			int called = 0;
+			var error = new NotSupportedException();
+
+			//m_future
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((System.NotSupportedException e) => {
+
+				called++;
+
+			}).Recover((System.Exception e)=> {
+				called++;
+			});
+
+			m_promise.FulfillError(error);
+
+			Assert.AreEqual (1, called);
+
+		}*/
+
+		[Test ()]
+		public void FuturePolymorphicErrorNoExceptionError ()
+		{
+			int called = 0;
+			int error = 1;
+
+			m_promise.FulfillError(error);
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((int e) => {
+
+				called++;
+
+			}).Recover((System.Exception e)=> {
+				called++;
+			});
+
+
+			Assert.AreEqual (1, called);
+
+		}
+
+		[Test ()]
+		public void FuturePolymorphicErrorNoExceptionError2 ()
+		{
+			int called = 0;
+			List<int> error = new List<int>();
+
+
+			var other = m_future.Map ((x) => {
+				return x;
+			}).Recover ((List<int> e) => {
+
+				called++;
+
+			});
+
+			m_promise.FulfillError(error);
+
+			Assert.AreEqual (1, called);
+
+		}
+
+		[Test]
+		public void ErrorWhenBothCallsFails()
+		{
+	
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
+
+			var error = new NotSupportedException();
+
+			var future = promise1.Future.Map((x) => x).FlatRecover((NotSupportedException e) => promise2.Future);
+
+			promise1.FulfillError(error);
+			promise2.FulfillError(error);
+
+			Assert.IsNotNull(future.Error);
+		}
+
+		[Test]
+		public void ErrorWhenBothCallsFailsCalledOrder1()
+		{
+
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
+
+			var error = new NotSupportedException();
+
+			var future = promise1.Future.Map((x) => x).FlatRecover((NotSupportedException e) => {return promise2.Future;});
+
+			bool called = false;
+
+			future.Recover((e) => called = true);
+
+
+			promise1.FulfillError(error);
+			promise2.FulfillError(error);
+
+			Assert.That(called);
+		}
+
+		[Test]
+		public void ErrorWhenBothCallsFailsCalledOrder2()
+		{
+
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
+
+			var error = new NotSupportedException();
+
+			var future = promise1.Future.Map((x) => x).FlatRecover((NotSupportedException e) => {return promise2.Future;});
+
+			bool called = false;
+
+			future.Recover((e) => called = true);
+
+			promise2.FulfillError(error);
+			promise1.FulfillError(error);
+
+			Assert.That(called);
+		}
+
+		[Test, Timeout(2000)]
+		public void MappingAfutureInsideItself()
+		{
+			m_promise.Fulfill(32);
+
+			m_future.Map((i) =>{
+
+				m_future.Map((i2) =>{});
+			});
+		}
+
+		[Test, Timeout(2000)]
+		public void MappingAfutureInsideItselfReturn()
+		{
+			m_promise.Fulfill(32);
+
+			var future = m_future.Map((i) =>{
+
+				m_future.Map((i2) =>{});
+				return 33;
+			});
+
+			Assert.AreEqual(33,future.Value);
+		}
+
+		[Test, Timeout(2000)]
+		public void RecoverfutureInsideItself()
+		{
+			m_promise.FulfillError(new Exception());
+
+			m_future.Recover((e) =>{
+
+				m_future.Recover((e2) =>{});
+			});
+				
+		}			
 	}
 }
 
