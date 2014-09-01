@@ -335,12 +335,13 @@ namespace u3dExtensions.Tests.FuturesTests
 
 
 		[Test ()]
-		public void FutureDoubleFailureFlatRecoveCalledWriteError ()
+		public void FutureDoubleFailureFlatRecoveCalledRightError ()
 		{
 			var error = new Exception();
+			var error2 = new Exception();
 
 			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Failure<int>( error));
-			m_promise.FulfillError(new Exception());
+			m_promise.FulfillError(error2);
 
 			bool called = false;
 			other.Recover((e) =>{called = error.Equals(e);});
@@ -348,6 +349,33 @@ namespace u3dExtensions.Tests.FuturesTests
 			Assert.That(called);
 		}
 
+		[Test ()]
+		public void FutureDoubleFailureFlatRecoveCalled ()
+		{
+			var error = new Exception();
+
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Failure<int>( error));
+			m_promise.FulfillError(new Exception());
+
+			bool called = false;
+			other.Recover((e) =>{called = true;});
+
+			Assert.That(called);
+		}
+
+		[Test ()]
+		public void FutureDoubleFailureFlatRecoveCalledOnce ()
+		{
+			var error = new Exception();
+
+			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Failure<int>( error));
+			m_promise.FulfillError(new Exception());
+
+			int called = 0;
+			other.Recover((e) =>{called++;});
+
+			Assert.AreEqual(1,called);
+		}
 
 		[Test ()]
 		public void FutureFailureRecoverRightObject ()
@@ -653,7 +681,65 @@ namespace u3dExtensions.Tests.FuturesTests
 				m_future.Recover((e2) =>{});
 			});
 				
-		}			
+		}
+
+		[Test]
+		public void RecoverFlatRecover()
+		{
+			bool called = false;
+
+			var future = m_future.FlatRecover ((NullReferenceException arg) => {
+				return Future.Success (32);
+			});
+
+			future.Recover ((object o) => {
+				called = true;
+			});
+
+			m_promise.FulfillError (new Exception ());
+
+			Assert.That (called);
+
+		}
+
+		[Test]
+		public void RecoverFlatRecoverOnce()
+		{
+			int called = 0;
+
+			var future = m_future.FlatRecover ((NullReferenceException arg) => {
+				return Future.Success (32);
+			});
+
+			future.Recover ((object o) => {
+				called++;
+			});
+
+			m_promise.FulfillError (new Exception ());
+
+			Assert.AreEqual (1,called);
+
+		}
+		[Test]
+		public void RecoverFlatRecoverWithException()
+		{
+			bool called = false;
+
+			var future = m_future.FlatRecover ((arg) => {
+				return Future.Success (32);
+			});
+
+			future.Recover ((object e) => {
+				called = true;
+			});
+
+			m_promise.FulfillError (33);
+
+			Assert.That (called);
+
+		}
+
+
 	}
 }
 

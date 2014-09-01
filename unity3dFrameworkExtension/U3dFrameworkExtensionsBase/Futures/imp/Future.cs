@@ -180,12 +180,7 @@ namespace u3dExtensions
 
 		public static IFuture<K> Recover<T,K>(this IFuture<T> me, Func<System.Exception, K> recoverFunc) where T:K
 		{
-			Future<K> other = new Future<K>();
-
-			me.Recover((e) =>{ other.Set(recoverFunc(e));});
-			me.Map((val) =>{ other.Set(val);});
-
-			return  other;
+			return  me.Recover<T,K,Exception>(recoverFunc);
 		}
 
 		public static IFuture<K> Recover<T,K,W>(this IFuture<T> me, Func<W, K> recoverFunc) where T:K
@@ -200,18 +195,8 @@ namespace u3dExtensions
 
 		public static IFuture<K> FlatRecover<T,K>(this IFuture<T> me, Func<System.Exception, IFuture<K>> recoverFunc) where T:K
 		{
-			Future<K> other = new Future<K>();
 
-			me.Recover((e) =>
-			{ 
-					var future = recoverFunc(e);
-					future.Map((x) => other.Set(x));
-					future.Recover((e2) => other.FlushErrorRecover(e2));
-			});
-
-			me.Map((val) =>{ other.Set(val);});
-
-			return  other;
+			return  me.FlatRecover<T,K,Exception>(recoverFunc);
 		}
 
 		public static IFuture<K> FlatRecover<T,K,W>(this IFuture<T> me, Func<W, IFuture<K>> recoverFunc) where T:K
@@ -225,6 +210,11 @@ namespace u3dExtensions
 				future.Recover((e2) => other.FlushErrorRecover(e2));
 			});
 
+			me.Recover ((object e) => {
+				if(!(e is W))
+					other.FlushErrorRecover(e);
+			});
+		
 			me.Map((val) =>{ other.Set(val);});
 
 			return  other;
