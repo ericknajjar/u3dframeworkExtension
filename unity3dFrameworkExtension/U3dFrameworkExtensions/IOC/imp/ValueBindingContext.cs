@@ -46,16 +46,18 @@ namespace u3dExtensions.IOC
 				m_bindings[key] = biding;
 			}
 
-			public object Get(object key, IBindingContext currentBindingContext, params object[] extras)
+			public bool Get(object key, IBindingContext currentBindingContext,out object ret, params object[] extras)
 			{
-				IBinding ret = null;
+				IBinding binding = null;
 
-				if(m_bindings.TryGetValue(key,out ret))
+				if(m_bindings.TryGetValue(key,out binding))
 				{
-					return ret.Get(currentBindingContext,extras);
+					ret = binding.Get(currentBindingContext,extras);
+					return true;
 				}
+				ret = null;
+				return false;
 
-				throw new BindingNotFound("With key: "+key);
 			}
 				
 		}

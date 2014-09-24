@@ -11,7 +11,8 @@ namespace u3dExtensions.IOC
 		{
 			m_namedBindings = new Dictionary<IBindingName,ValueBindingContext>();
 			//Creating empty binding
-			GetBinding(new BindingName(InnerBindingNames.Empty),true);
+			ValueBindingContext ret = null;
+			GetBinding(new BindingName(InnerBindingNames.Empty),true,out ret);
 
 		}
 
@@ -26,17 +27,27 @@ namespace u3dExtensions.IOC
 
 		IValueBindingContext<T> IBindingContext.Bind<T> ()
 		{
-			return GetBinding(new BindingName(InnerBindingNames.Empty),true).As<T>();
+			ValueBindingContext ret = null;
+
+			GetBinding(new BindingName(InnerBindingNames.Empty),true,out ret);
+
+			return ret.As<T>();
 		}
 
 		IValueBindingContext<T> IBindingContext.Bind<T> (IBindingName name)
 		{
-			return GetBinding(name,true).As<T>();
+			ValueBindingContext ret = null;
+
+			GetBinding(name,true,out ret);
+			return ret.As<T>();
 		}
 
 		public IUnsafeValueBindingContext Bind(IBindingName name,IBindingKey key)
 		{
-			return GetBinding(name,true).Unsafe(key);
+			ValueBindingContext ret = null;
+
+			GetBinding(name,true,out ret);
+			return ret.Unsafe(key);
 		}
 
 		T IBindingContext.Get<T> (IBindingName name, params object[] extras)
@@ -68,33 +79,43 @@ namespace u3dExtensions.IOC
 
 		public object Get(IBindingName name,IBindingKey key, params object[] extras)
 		{
-			ValueBindingContext ret = GetBinding(name);
-			return ret.Get(key,this,extras);
+			ValueBindingContext ret = null;
+
+			if(GetBinding(name, out ret))
+			{
+				object theValue = null;
+				if(ret.Get(key,this,out theValue,extras))
+				{
+					return theValue;
+				}
+			}
+				
+			throw new BindingNotFound(name,key);
 		}
 			
 
-		ValueBindingContext GetBinding(IBindingName name, bool create)
+		bool GetBinding(IBindingName name, bool create,out ValueBindingContext valueBindingContext)
 		{
-			ValueBindingContext ret = null;
-
-			if(m_namedBindings.TryGetValue(name,out ret))
+			if(m_namedBindings.TryGetValue(name,out valueBindingContext))
 			{
-				return ret;
+				return true;
 			}
 
 			if(create)
 			{
-				ret = new ValueBindingContext(name);
-				m_namedBindings[name] = ret;
-				return ret;
+				valueBindingContext = new ValueBindingContext(name);
+				m_namedBindings[name] = valueBindingContext;
+				return true;
 			}
 
-			throw new BindingNotFound();
+			valueBindingContext = null;
+
+			return false;
 		}
 
-		ValueBindingContext GetBinding(IBindingName name)
+		bool GetBinding(IBindingName name, out ValueBindingContext valueBindingContext)
 		{
-			return GetBinding(name,false);
+			return GetBinding(name,false,out valueBindingContext);
 		}
 	}
 }
