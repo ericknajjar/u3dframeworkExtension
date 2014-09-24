@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using u3dExtensions.IOC;
-using u3dExtensions.IOC.extesions;
+using u3dExtensions.IOC.extensions;
 
 namespace u3dExtensions.Tests.BindingContextTests
 {
@@ -273,6 +273,16 @@ namespace u3dExtensions.Tests.BindingContextTests
 			var context =  TestsFactory.BindingContext();
 
 			IBindingContext meAgain = context.Get<IBindingContext>(InnerBindingNames.CurrentBindingContext);
+
+			Assert.AreEqual(context,meAgain);
+		}
+
+		[Test ()]
+		public void GetItselfEmptyName()
+		{
+			var context =  TestsFactory.BindingContext();
+
+			IBindingContext meAgain = context.Get<IBindingContext>();
 
 			Assert.AreEqual(context,meAgain);
 		}

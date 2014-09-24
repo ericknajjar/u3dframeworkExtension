@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using u3dExtensions.IOC;
-using u3dExtensions.IOC.extesions;
+using u3dExtensions.IOC.extensions;
 
 namespace u3dExtensions.Tests.BindingTests
 {

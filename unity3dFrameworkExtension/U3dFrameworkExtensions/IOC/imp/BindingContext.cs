@@ -13,13 +13,14 @@ namespace u3dExtensions.IOC
 			//Creating empty binding
 			ValueBindingContext ret = null;
 			GetBinding(new BindingName(InnerBindingNames.Empty),true,out ret);
-
 		}
 
 		static public IBindingContext Create()
 		{
 			IBindingContext ret = new BindingContext();
 			ret.Bind<IBindingContext>(new BindingName(InnerBindingNames.CurrentBindingContext)).To(()=>ret);
+			ret.Bind<IBindingContext>().To(()=>ret);
+
 			return ret;
 		}
 

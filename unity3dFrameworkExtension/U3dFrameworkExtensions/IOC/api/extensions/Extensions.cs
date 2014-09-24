@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace u3dExtensions.IOC.extesions
+namespace u3dExtensions.IOC.extensions
 {
 	public static class IUnsafeBindingContextExtensions
 	{
