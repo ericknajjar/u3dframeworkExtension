@@ -298,6 +298,32 @@ namespace u3dExtensions.Tests.FuturesTests
 		}
 
 		[Test ()]
+		public void FutureFlatChainMiddleFailuer ()
+		{
+			var other = m_future.FlatMap((x) =>{ return Future.Success(3).FlatMap((y) =>{
+
+				throw new Exception();
+				return Future.Success(33);
+			});
+
+			});
+				
+
+		
+			bool called = false;
+			other.Recover((e) => {called = true;});
+
+			m_promise.Fulfill(32);
+
+			other = Future.Success(3).FlatMap((yey) =>
+				other.FlatMap((x) => Future.Success(303) )
+			);
+
+
+			Assert.That(called);
+		}
+
+		[Test ()]
 		public void FutureSucessRecoverRightValue ()
 		{
 			var other = m_future.Map((x) =>{ return x;}).Recover((e) => 33);
