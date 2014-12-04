@@ -220,6 +220,14 @@ namespace u3dExtensions
 			return  other;
 		}
 
+		public static IFuture<T> Complete<T> (this IFuture<T> me,System.Action completeFunc)
+		{
+			me.Map((t) => completeFunc());
+			me.Recover((object o) => completeFunc());
+
+			return me;
+		}
+
 		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
 		{
 			Future<K> other = new Future<K>();

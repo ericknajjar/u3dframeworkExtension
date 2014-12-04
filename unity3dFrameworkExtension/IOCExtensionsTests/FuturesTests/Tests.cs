@@ -746,6 +746,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			Assert.AreEqual (1,called);
 
 		}
+
 		[Test]
 		public void RecoverFlatRecoverWithException()
 		{
@@ -765,6 +766,45 @@ namespace u3dExtensions.Tests.FuturesTests
 
 		}
 
+		[Test]
+		public void FullfilShouldCallComlete()
+		{
+			bool called = false;
+
+			m_future.Complete(() =>{
+				called = true;
+			});
+	
+			m_promise.Fulfill (33);
+
+			Assert.That (called);
+		}
+
+
+		[Test]
+		public void FullfilErrorShouldCallComlete()
+		{
+			bool called = false;
+
+			m_future.Complete(() =>{
+				called = true;
+			});
+
+			m_promise.FulfillError (33);
+
+			Assert.That (called);
+		}
+
+		[Test]
+		public void CompleteReturnsSameFuture()
+		{
+		
+			var future = m_future.Complete(() =>{
+
+			});
+
+			Assert.AreSame(future,m_future);
+		}
 
 	}
 }
