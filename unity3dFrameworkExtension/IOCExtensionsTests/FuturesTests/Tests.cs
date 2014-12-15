@@ -806,6 +806,105 @@ namespace u3dExtensions.Tests.FuturesTests
 			Assert.AreSame(future,m_future);
 		}
 
+		[Test]
+		public void IEnumerableToList ()
+		{
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
+			futureList.Add (m_future);
+
+			int count = 0;
+			futureList.FlatMap ().Map ((ret) => 
+			{
+				count = ret.Count;
+			});
+
+			m_promise.Fulfill (1);
+
+			Assert.AreEqual (1, count);
+		}
+
+		[Test]
+		public void IEnumerableToListCorrectValue ()
+		{
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
+			futureList.Add (m_future);
+
+			int val = 0;
+			futureList.FlatMap ().Map ((ret) => 
+				{
+					val = ret[0];
+				});
+
+			m_promise.Fulfill (1);
+
+			Assert.AreEqual (1, val);
+		}
+
+		[Test]
+		public void IEnumerableToListFulfillErrorHandle ()
+		{
+			IPromise<int> promise2 = new Promise<int>();
+
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
+			futureList.Add (m_future);
+			futureList.Add (promise2.Future);
+
+			int count = 0;
+			futureList.FlatMap ().Map ((ret) => 
+				{
+					count = ret.Count;
+				});
+
+			m_promise.Fulfill (1);
+			promise2.FulfillError (1);
+
+			Assert.AreEqual (1, count);
+		}
+
+		[Test]
+		public void IEnumerableToListCount2 ()
+		{
+			IPromise<int> promise2 = new Promise<int>();
+
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
+			futureList.Add (m_future);
+			futureList.Add (promise2.Future);
+
+			int count = 0;
+			futureList.FlatMap ().Map ((ret) => 
+				{
+					count = ret.Count;
+				});
+
+			m_promise.Fulfill (1);
+			promise2.Fulfill (1);
+
+			Assert.AreEqual (2, count);
+		}
+
+		[Test]
+		public void ChangeListAfterFlatMapShouldWork ()
+		{
+			IPromise<int> promise2 = new Promise<int>();
+
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
+			futureList.Add (m_future);
+			futureList.Add (promise2.Future);
+
+			int count = 0;
+			futureList.FlatMap ().Map ((ret) => 
+				{
+					count = ret.Count;
+				});
+
+			futureList.RemoveAt (0);
+
+			m_promise.Fulfill (1);
+			promise2.Fulfill (1);
+
+			Assert.AreEqual (2, count);
+		}
+
 	}
 }
 
