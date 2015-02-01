@@ -63,13 +63,22 @@ namespace u3dExtensions.IOC
 			return (T)Get(new BindingName(InnerBindingNames.Empty),key);
 		}
 
-		T IBindingContext.Get<T> (IBindingName name)
+		bool IBindingContext.TryGet<T> (out T t, params object[] extras)
 		{
 			IBindingKey key = new BindingKey(typeof(T));
-			return (T)Get(name,key);
-		}
-	
+			var name = new BindingName(InnerBindingNames.Empty);
 
+			return TryGet(name,key,out t,extras);
+		}	
+
+		bool IBindingContext.TryGet<T> (IBindingName name, out T t, params object[] extras)
+		{
+			IBindingKey key = new BindingKey(typeof(T));
+
+			return TryGet(name,key,out t,extras);
+		}
+
+	
 		public IUnsafeBindingContext Unsafe {
 			get 
 			{
@@ -78,22 +87,41 @@ namespace u3dExtensions.IOC
 		}
 		#endregion
 
-		public object Get(IBindingName name,IBindingKey key, params object[] extras)
+		bool TryGet<T> (IBindingName name, IBindingKey key,out T t, object[] extras)
+		{
+			object ret = TryGetBingind (name, key, extras);
+
+			if (ret != null) {
+				t = (T)ret;
+				return true;
+			}
+
+			t = default(T);
+			return false;
+		}
+
+		object TryGetBingind (IBindingName name, IBindingKey key, object[] extras)
 		{
 			ValueBindingContext ret = null;
 
-			if(GetBinding(name, out ret))
+			if (GetBinding (name, out ret))
 			{
 				object theValue = null;
-				if(ret.Get(key,this,out theValue,extras))
+				if (ret.Get (key, this, out theValue, extras))
 				{
 					return theValue;
 				}
 			}
-				
-			throw new BindingNotFound(name,key);
+
+			return null;
 		}
-			
+
+		public object Get(IBindingName name,IBindingKey key, params object[] extras)
+		{
+			object ret = TryGetBingind (name, key, extras);
+			if(ret == null) throw new BindingNotFound(name,key);
+			return ret;
+		}
 
 		bool GetBinding(IBindingName name, bool create,out ValueBindingContext valueBindingContext)
 		{

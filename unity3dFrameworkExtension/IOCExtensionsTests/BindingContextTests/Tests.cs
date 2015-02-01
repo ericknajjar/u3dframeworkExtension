@@ -320,6 +320,74 @@ namespace u3dExtensions.Tests.BindingContextTests
 			Assert.DoesNotThrow(() => TypedGet<ITestInterface>(context) );
 		}
 
+		[Test ()]
+		public void TryGetNotFoundTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			int exit = 0;
+			Assert.DoesNotThrow(() => context.TryGet<int>(out exit) );
+		}
+
+		[Test ()]
+		public void TryGetFoundTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			context.Bind<int>().To(() => 93);
+			int exit = 0;
+			Assert.That( context.TryGet<int>(out exit) );
+		}
+
+		[Test ()]
+		public void TryGetFoundRightValueTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			context.Bind<int>().To(() => 93);
+			int exit = 0;
+			context.TryGet<int>(out exit);
+			Assert.AreEqual(93,exit);
+		}
+
+		[Test ()]
+		public void TryGetNotFoundReturnFalseTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			int exit = 0;
+
+			Assert.That(!context.TryGet<int>(out exit));
+		}
+
+		[Test ()]
+		public void TryGetNamedNotFoundReturnFalseTest()
+		{
+			var context =  TestsFactory.BindingContext();
+			int exit = 0;
+
+			Assert.That(!context.TryGet<int>("testName",out exit));
+		}
+
+		[Test ()]
+		public void TryGetPartialBindingTest()
+		{
+			IBindingContext context = TestsFactory.BindingContext();
+			IBindingRequirement requirement = BindingRequirements.Instance.With<float>();
+
+			context.Bind<float>().To(()=> 0.1f);
+
+			int extra = -1;
+
+			System.Func<float,int,int> func = (bindinded,nonBinded) => {extra = nonBinded; return 45;};
+
+			IBinding binding = new Binding(func,requirement);
+
+			context.Unsafe.Bind(typeof(int)).To(binding);
+
+			int exit = 0;
+
+			context.TryGet<int>(out exit,32);
+
+			Assert.AreEqual(32,extra);
+		}
+
 
 	}
 
