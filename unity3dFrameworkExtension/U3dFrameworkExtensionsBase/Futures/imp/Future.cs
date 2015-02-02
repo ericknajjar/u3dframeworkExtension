@@ -39,8 +39,8 @@ namespace u3dExtensions
 
 		public IFuture<Unit> Map(Action<T> mapFunc)
 		{
-			return Map((x) =>{
 
+			return Map((x) =>{
 				mapFunc(x);
 				return Unit.Unit;
 			});
@@ -48,6 +48,9 @@ namespace u3dExtensions
 
 		public IFuture<K> Map<K> (Func<T, K> mapFunc)
 		{
+			if(IsDisposed)
+				throw new FutureContentDisposed();
+
 			Future<K> other = new Future<K>();
 
 			if(Error!=null)
@@ -58,13 +61,18 @@ namespace u3dExtensions
 	
 			m_mapFunc += (x) =>
 			{
-				try
+				if(IsDisposed)
+					FlushErrorRecover(new FutureContentDisposed());
+				else
 				{
-					other.Set(mapFunc(x));
-				}
-				catch(System.Exception e)
-				{
-					other.FlushErrorRecover(e);
+					try
+					{
+						other.Set(mapFunc(x));
+					}
+					catch(System.Exception e)
+					{
+						other.FlushErrorRecover(e);
+					}
 				}
 			};
 				
@@ -82,6 +90,7 @@ namespace u3dExtensions
 		{
 			var localMap = m_mapFunc;
 			m_mapFunc = (x) =>{};
+
 			localMap(Value);
 	
 			m_recoverPairs.Clear ();
@@ -94,6 +103,9 @@ namespace u3dExtensions
 
 		public IFuture<T> Recover<K> (Action<K> recoverFunc)
 		{
+			if(IsDisposed)
+				throw new FutureContentDisposed();
+
 			if(Error!=null)
 			{
 				if(Error is K)
@@ -135,6 +147,7 @@ namespace u3dExtensions
 		public void Set(T value) 
 		{
 			if(IsSet) return;
+		
 
 			Value = value;
 			IsSet = true;
@@ -160,6 +173,30 @@ namespace u3dExtensions
 		}
 
 	
+		private bool IsDisposed
+		{
+			get;
+			set;
+		}
+
+		public void Dispose ()
+		{
+			if(!IsDisposed)
+			{
+				Map((x) => {
+
+						var disposable = (x as IDisposable);
+						if(disposable != null)
+						{
+							disposable.Dispose();				
+						}
+
+					});
+					
+				IsDisposed = true;
+			}
+
+		}
 	}
 
 	public static class Future

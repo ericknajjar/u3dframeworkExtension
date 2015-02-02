@@ -905,6 +905,155 @@ namespace u3dExtensions.Tests.FuturesTests
 			Assert.AreEqual (2, count);
 		}
 
+		[Test]
+		public void FutureToDisposableCallsDisposeWhenDisposed()
+		{
+			var disposable = new DisposableTest();
+			var future = Future.Success(disposable);
+			future.Dispose();
+
+			Assert.AreEqual(1,disposable.Disposed);
+		}
+
+		[Test]
+		public void FutureToDisposableCallsDisposeWhenDisposedMulty()
+		{
+			var disposable = new DisposableTest();
+			var future = Future.Success(disposable);
+
+			future.Dispose();
+			future.Dispose();
+
+			Assert.AreEqual(1,disposable.Disposed);
+		}
+
+		[Test]
+		public void DerivedFutureToDisposableNotCallsDispose()
+		{
+			var disposable = new DisposableTest();
+			var future = Future.Success(disposable).Map((x) => {});
+
+			future.Dispose();
+
+			Assert.AreEqual(0,disposable.Disposed);
+		}
+
+		[Test]
+		public void FutureWithFutureContentDisposedOnMap()
+		{
+			var disposable = new DisposableTest();
+			var future = Future.Success(disposable);
+
+			future.Dispose();		
+
+			Assert.Throws<FutureContentDisposed>(() => future.Map((x) =>{}));
+		}
+
+		[Test]
+		public void FutureWithFutureContentDisposedOnRecover()
+		{
+			var disposable = new DisposableTest();
+			var future = Future.Success(disposable);
+
+			future.Dispose();		
+
+			Assert.Throws<FutureContentDisposed>(() => future.Recover((x) =>{}));
+		}
+
+		[Test]
+		public void FutureWithFutureContentDisposedOnComplete()
+		{
+			var disposable = new DisposableTest();
+			var future = Future.Success(disposable);
+
+			future.Dispose();		
+
+			Assert.Throws<FutureContentDisposed>(() => future.Complete(() =>{}));
+		}
+
+
+		[Test]
+		public void NotMapAsyncDisposedFuture()
+		{
+			var disposable = new DisposableTest();
+			var promise = new Promise<DisposableTest>();
+			var future = promise.Future;
+			bool called = false;
+
+			future.Map((x) =>{
+				called = true;
+			});
+
+			future.Dispose();		
+
+			promise.Fulfill(disposable);
+
+			Assert.That(!called);
+		}
+
+		[Test]
+		public void RecoverDerivedAsyncDisposedFuture()
+		{
+			var disposable = new DisposableTest();
+			var promise = new Promise<DisposableTest>();
+			var future = promise.Future;
+			bool called = false;
+
+			future.Map((x) =>{
+
+			}).Recover((e) =>{
+
+				called = true;
+			});
+
+			future.Dispose();		
+
+			promise.Fulfill(disposable);
+
+			Assert.That(called);
+		}
+
+		[Test]
+		public void DirectRecoverDerivedAsyncDisposedFuture()
+		{
+			var disposable = new DisposableTest();
+			var promise = new Promise<DisposableTest>();
+			var future = promise.Future;
+			bool called = false;
+
+			future.Recover((e) =>{
+				called = true;
+			});
+
+			future.Dispose();		
+
+			promise.Fulfill(disposable);
+
+			Assert.That(called);
+		}
+
+		[Test]
+		public void DirectFlatRecoverDerivedAsyncDisposedFuture()
+		{
+			var disposable = new DisposableTest();
+			var promise = new Promise<DisposableTest>();
+			var future = promise.Future;
+			bool called = false;
+
+
+			future.FlatRecover((e) =>{
+
+				called = true;
+				return Future.Success(disposable);
+
+			});
+
+			future.Dispose();		
+
+			promise.Fulfill(disposable);
+
+			Assert.That(called);
+		}
 	}
 }
 

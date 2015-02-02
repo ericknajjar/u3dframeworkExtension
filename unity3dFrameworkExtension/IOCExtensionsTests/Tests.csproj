@@ -44,6 +44,7 @@
     <Compile Include="BindingContextTests\ITestInterface.cs" />
     <Compile Include="BindingContextTests\TestClass.cs" />
     <Compile Include="EventTests\Tests.cs" />
+    <Compile Include="FuturesTests\DisposableTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

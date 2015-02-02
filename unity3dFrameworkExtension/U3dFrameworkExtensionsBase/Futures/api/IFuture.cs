@@ -2,7 +2,7 @@
 
 namespace u3dExtensions
 {
-	public interface IFuture<T>
+	public interface IFuture<T> : IDisposable
 	{
 		IFuture<Unit> Map(System.Action<T> mapFunc);
 
