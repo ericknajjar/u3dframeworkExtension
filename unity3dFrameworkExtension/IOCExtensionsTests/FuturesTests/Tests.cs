@@ -961,6 +961,23 @@ namespace u3dExtensions.Tests.FuturesTests
 		}
 
 		[Test]
+		public void MultyMapSingleDispose()
+		{
+			var disposable = new DisposableTest();
+			var promise = new Promise<DisposableTest>();
+			var future = promise.Future;
+				
+			future.Map((x) =>{});
+			future.Map((x) =>{});
+
+			future.Dispose();
+
+			promise.Fulfill(disposable);
+
+			Assert.AreEqual(1,disposable.Disposed);
+		}
+
+		[Test]
 		public void FutureWithFutureContentDisposedOnComplete()
 		{
 			var disposable = new DisposableTest();
@@ -989,6 +1006,19 @@ namespace u3dExtensions.Tests.FuturesTests
 			promise.Fulfill(disposable);
 
 			Assert.That(!called);
+		}
+
+		[Test]
+		public void DisposedFuture()
+		{
+			var disposable = new DisposableTest();
+			var promise = new Promise<DisposableTest>();
+			var future = promise.Future;
+			future.Dispose();		
+
+			promise.Fulfill(disposable);
+
+			Assert.AreEqual(1,disposable.Disposed);
 		}
 
 		[Test]

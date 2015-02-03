@@ -61,19 +61,15 @@ namespace u3dExtensions
 	
 			m_mapFunc += (x) =>
 			{
-				if(IsDisposed)
-					FlushErrorRecover(new FutureContentDisposed());
-				else
+				try
 				{
-					try
-					{
-						other.Set(mapFunc(x));
-					}
-					catch(System.Exception e)
-					{
-						other.FlushErrorRecover(e);
-					}
+					other.Set(mapFunc(x));
 				}
+				catch(System.Exception e)
+				{
+					other.FlushErrorRecover(e);
+				}
+
 			};
 				
 			if(IsSet == true)
@@ -91,9 +87,21 @@ namespace u3dExtensions
 			var localMap = m_mapFunc;
 			m_mapFunc = (x) =>{};
 
-			localMap(Value);
-	
-			m_recoverPairs.Clear ();
+			if(IsDisposed)
+			{
+				var disposable = (Value as IDisposable);
+				if(disposable != null)
+				{
+					disposable.Dispose();				
+				}
+
+				FlushErrorRecover(new FutureContentDisposed());
+			}
+			else
+			{
+				localMap(Value);
+				m_recoverPairs.Clear ();
+			}
 		}
 
 		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
@@ -183,15 +191,15 @@ namespace u3dExtensions
 		{
 			if(!IsDisposed)
 			{
-				Map((x) => {
 
-						var disposable = (x as IDisposable);
-						if(disposable != null)
-						{
-							disposable.Dispose();				
-						}
-
-					});
+				if(IsSet)
+				{
+					var disposable = (Value as IDisposable);
+					if(disposable != null)
+					{
+						disposable.Dispose();				
+					}
+				}
 					
 				IsDisposed = true;
 			}
