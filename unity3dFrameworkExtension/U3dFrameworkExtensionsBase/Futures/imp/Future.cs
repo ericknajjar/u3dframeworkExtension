@@ -152,7 +152,7 @@ namespace u3dExtensions
 			}
 		}
 
-		public void Set(T value) 
+		internal void Set(T value) 
 		{
 			if(IsSet) return;
 		
