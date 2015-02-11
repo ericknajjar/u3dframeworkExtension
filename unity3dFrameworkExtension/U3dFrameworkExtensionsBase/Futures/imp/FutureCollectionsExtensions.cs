@@ -5,13 +5,13 @@ namespace u3dExtensions
 {
 	public static class FutureCollectionsExtensions
 	{
-		public static IFuture<IList<T>> FlatMap<T>(this IEnumerable<IFuture<T>> enumerable)
+		public static Future<IList<T>> FlatMap<T>(this IEnumerable<Future<T>> enumerable)
 		{
-			IPromise<IList<T>> promise = new Promise<IList<T>> ();
+			Promise<IList<T>> promise = new Promise<IList<T>> ();
 
 			IList<T> ret = new List<T> ();
 
-			var secured = new List<IFuture<T>> (enumerable);
+			var secured = new List<Future<T>> (enumerable);
 		
 			var enumerator = secured.GetEnumerator ();
 
@@ -20,7 +20,7 @@ namespace u3dExtensions
 			return promise.Future;
 		}
 
-		static void Map<T>(IEnumerator<IFuture<T>> enumerator, IList<T> toAdd, IPromise<IList<T>> promise)
+		static void Map<T>(IEnumerator<Future<T>> enumerator, IList<T> toAdd, Promise<IList<T>> promise)
 		{
 		
 			if (enumerator.MoveNext ()) 
