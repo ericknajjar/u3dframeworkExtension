@@ -8,8 +8,8 @@ namespace u3dExtensions.Tests.FuturesTests
 	[TestFixture ()]
 	public class Tests
 	{
-		Promise<int> m_promise;
-		Future<int> m_future;
+		IPromise<int> m_promise;
+		IFuture<int> m_future;
 
 		class A
 		{
@@ -24,7 +24,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		[SetUp]
 		public void Setup()
 		{
-			m_promise = new PromiseClass<int>();
+			m_promise = new Promise<int>();
 			m_future = m_promise.Future;
 		}
 
@@ -71,7 +71,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void IntFutureMapsToAfloatFuture ()
 		{
 			float ret = -1;
-			Future<float> floatFuture = m_future.Map((x)=> x+1.5f);
+			IFuture<float> floatFuture = m_future.Map((x)=> x+1.5f);
 
 			floatFuture.Map((x) => ret = x);
 
@@ -85,7 +85,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Future<float> floatFuture = m_future.Map((x)=> x+1.5f);
+			IFuture<float> floatFuture = m_future.Map((x)=> x+1.5f);
 
 			floatFuture.Map((x) => {throw new Exception();}).Recover((e) =>{ called = true;});
 
@@ -99,7 +99,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			int ret = -1;
 
-			Future<int> success = Future.Success(32);
+			IFuture<int> success = Future.Success(32);
 
 			success.Map((x) => ret = x);
 
@@ -111,7 +111,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Future<int> success = Future.Failure<int>(new Exception());
+			IFuture<int> success = Future.Failure<int>(new Exception());
 
 			success.Recover((e) =>{ called = true;});
 
@@ -123,7 +123,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Future<float> floatFuture = Future.Success(1.0f);
+			IFuture<float> floatFuture = Future.Success(1.0f);
 
 			floatFuture.Map((x) => {throw new Exception();}).Recover((e) =>{ called = true;});
 
@@ -135,7 +135,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Future<float> floatFuture = m_future.Map(x => 44.0f);
+			IFuture<float> floatFuture = m_future.Map(x => 44.0f);
 
 			m_promise.Fulfill(32);
 
@@ -149,7 +149,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			float ret = -1;
 
-			Future<int> success = Future.Success(32);
+			IFuture<int> success = Future.Success(32);
 
 			success.FlatMap((x) => Future.Success(99.0f)).Map((x) => ret = x);
 
@@ -161,7 +161,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Future<int> success = Future.Success(32);
+			IFuture<int> success = Future.Success(32);
 
 			success.FlatMap((x) => {throw new Exception(); return Future.Success(99.0f);}).Map((x) => {}).Recover((e) =>{ called = true;});
 
@@ -198,7 +198,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Promise<int> promisse2 = new PromiseClass<int>();
+			IPromise<int> promisse2 = new Promise<int>();
 
 			m_future.Map((i) => promisse2.FulfillError(new Exception()));
 
@@ -214,7 +214,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			bool called = false;
 
-			Promise<int> promisse2 = new PromiseClass<int>();
+			IPromise<int> promisse2 = new Promise<int>();
 
 			m_future.Map((i) => promisse2.FulfillError(new Exception()));
 
@@ -231,7 +231,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		{
 			int callCount = 0;
 
-			Promise<int> promisse2 = new PromiseClass<int>();
+			IPromise<int> promisse2 = new Promise<int>();
 
 			m_future.Map((i) => promisse2.FulfillError(new Exception()));
 
@@ -616,8 +616,8 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void ErrorWhenBothCallsFails()
 		{
 	
-			Promise<int> promise1 = new PromiseClass<int>();
-			Promise<int> promise2 = new PromiseClass<int>();
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
 
 			var error = new NotSupportedException();
 
@@ -633,8 +633,8 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void ErrorWhenBothCallsFailsCalledOrder1()
 		{
 
-			Promise<int> promise1 = new PromiseClass<int>();
-			Promise<int> promise2 = new PromiseClass<int>();
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
 
 			var error = new NotSupportedException();
 
@@ -655,8 +655,8 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void ErrorWhenBothCallsFailsCalledOrder2()
 		{
 
-			Promise<int> promise1 = new PromiseClass<int>();
-			Promise<int> promise2 = new PromiseClass<int>();
+			IPromise<int> promise1 = new Promise<int>();
+			IPromise<int> promise2 = new Promise<int>();
 
 			var error = new NotSupportedException();
 
@@ -809,7 +809,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		[Test]
 		public void IEnumerableToList ()
 		{
-			IList<Future<int>> futureList = new List<Future<int>>();
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
 			futureList.Add (m_future);
 
 			int count = 0;
@@ -826,7 +826,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		[Test]
 		public void IEnumerableToListCorrectValue ()
 		{
-			IList<Future<int>> futureList = new List<Future<int>>();
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
 			futureList.Add (m_future);
 
 			int val = 0;
@@ -843,9 +843,9 @@ namespace u3dExtensions.Tests.FuturesTests
 		[Test]
 		public void IEnumerableToListFulfillErrorHandle ()
 		{
-			Promise<int> promise2 = new PromiseClass<int>();
+			IPromise<int> promise2 = new Promise<int>();
 
-			IList<Future<int>> futureList = new List<Future<int>>();
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
 			futureList.Add (m_future);
 			futureList.Add (promise2.Future);
 
@@ -864,9 +864,9 @@ namespace u3dExtensions.Tests.FuturesTests
 		[Test]
 		public void IEnumerableToListCount2 ()
 		{
-			Promise<int> promise2 = new PromiseClass<int>();
+			IPromise<int> promise2 = new Promise<int>();
 
-			IList<Future<int>> futureList = new List<Future<int>>();
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
 			futureList.Add (m_future);
 			futureList.Add (promise2.Future);
 
@@ -885,9 +885,9 @@ namespace u3dExtensions.Tests.FuturesTests
 		[Test]
 		public void ChangeListAfterFlatMapShouldWork ()
 		{
-			Promise<int> promise2 = new PromiseClass<int>();
+			IPromise<int> promise2 = new Promise<int>();
 
-			IList<Future<int>> futureList = new List<Future<int>>();
+			IList<IFuture<int>> futureList = new List<IFuture<int>>();
 			futureList.Add (m_future);
 			futureList.Add (promise2.Future);
 
@@ -964,7 +964,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void MultyMapSingleDispose()
 		{
 			var disposable = new DisposableTest();
-			var promise = new PromiseClass<DisposableTest>();
+			var promise = new Promise<DisposableTest>();
 			var future = promise.Future;
 				
 			future.Map((x) =>{});
@@ -993,7 +993,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void NotMapAsyncDisposedFuture()
 		{
 			var disposable = new DisposableTest();
-			var promise = new PromiseClass<DisposableTest>();
+			var promise = new Promise<DisposableTest>();
 			var future = promise.Future;
 			bool called = false;
 
@@ -1012,7 +1012,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void DisposedFuture()
 		{
 			var disposable = new DisposableTest();
-			var promise = new PromiseClass<DisposableTest>();
+			var promise = new Promise<DisposableTest>();
 			var future = promise.Future;
 			future.Dispose();		
 
@@ -1025,7 +1025,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void RecoverDerivedAsyncDisposedFuture()
 		{
 			var disposable = new DisposableTest();
-			var promise = new PromiseClass<DisposableTest>();
+			var promise = new Promise<DisposableTest>();
 			var future = promise.Future;
 			bool called = false;
 
@@ -1047,7 +1047,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void DirectRecoverDerivedAsyncDisposedFuture()
 		{
 			var disposable = new DisposableTest();
-			var promise = new PromiseClass<DisposableTest>();
+			var promise = new Promise<DisposableTest>();
 			var future = promise.Future;
 			bool called = false;
 
@@ -1066,7 +1066,7 @@ namespace u3dExtensions.Tests.FuturesTests
 		public void DirectFlatRecoverDerivedAsyncDisposedFuture()
 		{
 			var disposable = new DisposableTest();
-			var promise = new PromiseClass<DisposableTest>();
+			var promise = new Promise<DisposableTest>();
 			var future = promise.Future;
 			bool called = false;
 

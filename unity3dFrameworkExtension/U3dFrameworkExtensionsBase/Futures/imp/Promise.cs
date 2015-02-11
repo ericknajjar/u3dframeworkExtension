@@ -2,7 +2,7 @@
 
 namespace u3dExtensions
 {
-	public class Promise<T>
+	public class Promise<T>: IPromise<T>
 	{
 		Future<T> m_future = new Future<T>();
 
@@ -13,7 +13,7 @@ namespace u3dExtensions
 
 		#region IPromise implementation
 
-		public Future<T> Future 
+		public IFuture<T> Future 
 		{
 			get 
 			{

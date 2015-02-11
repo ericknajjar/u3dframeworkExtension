@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace u3dExtensions
 {
-	public class Future<T>: IDisposable
+	public class Future<T>: IFuture<T>
 	{
 	
 		Action<T> m_mapFunc = (t) => {};
@@ -37,7 +37,7 @@ namespace u3dExtensions
 
 		#region IFuture implementation
 
-		public Future<Unit> Map(Action<T> mapFunc)
+		public IFuture<Unit> Map(Action<T> mapFunc)
 		{
 
 			return Map((x) =>{
@@ -46,7 +46,7 @@ namespace u3dExtensions
 			});
 		}
 
-		public Future<K> Map<K> (Func<T, K> mapFunc)
+		public IFuture<K> Map<K> (Func<T, K> mapFunc)
 		{
 			if(IsDisposed)
 				throw new FutureContentDisposed();
@@ -104,12 +104,12 @@ namespace u3dExtensions
 			}
 		}
 
-		public Future<T> Recover(Action<System.Exception> recoverFunc)
+		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
 		{
 			return Recover<System.Exception> (recoverFunc);
 		}
 
-		public Future<T> Recover<K> (Action<K> recoverFunc)
+		public IFuture<T> Recover<K> (Action<K> recoverFunc)
 		{
 			if(IsDisposed)
 				throw new FutureContentDisposed();
@@ -209,26 +209,26 @@ namespace u3dExtensions
 
 	public static class Future
 	{
-		public static Future<T> Success<T>(T value)
+		public static IFuture<T> Success<T>(T value)
 		{
 			Future<T> future = new Future<T>();
 			future.Set(value);
 			return future;
 		}
 
-		public static Future<T> Failure<T>(Exception e)
+		public static IFuture<T> Failure<T>(Exception e)
 		{
 			Future<T> future = new Future<T>(e);
 		
 			return future;
 		}
 
-		public static Future<K> Recover<T,K>(this Future<T> me, Func<System.Exception, K> recoverFunc) where T:K
+		public static IFuture<K> Recover<T,K>(this IFuture<T> me, Func<System.Exception, K> recoverFunc) where T:K
 		{
 			return  me.Recover<T,K,Exception>(recoverFunc);
 		}
 
-		public static Future<K> Recover<T,K,W>(this Future<T> me, Func<W, K> recoverFunc) where T:K
+		public static IFuture<K> Recover<T,K,W>(this IFuture<T> me, Func<W, K> recoverFunc) where T:K
 		{
 			Future<K> other = new Future<K>();
 
@@ -238,13 +238,13 @@ namespace u3dExtensions
 			return  other;
 		}
 
-		public static Future<K> FlatRecover<T,K>(this Future<T> me, Func<System.Exception, Future<K>> recoverFunc) where T:K
+		public static IFuture<K> FlatRecover<T,K>(this IFuture<T> me, Func<System.Exception, IFuture<K>> recoverFunc) where T:K
 		{
 
 			return  me.FlatRecover<T,K,Exception>(recoverFunc);
 		}
 
-		public static Future<K> FlatRecover<T,K,W>(this Future<T> me, Func<W, Future<K>> recoverFunc) where T:K
+		public static IFuture<K> FlatRecover<T,K,W>(this IFuture<T> me, Func<W, IFuture<K>> recoverFunc) where T:K
 		{
 			Future<K> other = new Future<K>();
 
@@ -265,7 +265,7 @@ namespace u3dExtensions
 			return  other;
 		}
 
-		public static Future<T> Complete<T> (this Future<T> me,System.Action completeFunc)
+		public static IFuture<T> Complete<T> (this IFuture<T> me,System.Action completeFunc)
 		{
 			me.Map((t) => completeFunc());
 			me.Recover((object o) => completeFunc());
@@ -273,7 +273,7 @@ namespace u3dExtensions
 			return me;
 		}
 
-		public static Future<K> FlatMap<T,K> (this Future<T> me,System.Func<T,Future<K>> flatMapFunc)
+		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
 		{
 			Future<K> other = new Future<K>();
 
