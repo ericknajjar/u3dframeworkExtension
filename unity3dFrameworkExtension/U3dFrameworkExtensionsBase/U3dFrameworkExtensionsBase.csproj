@@ -54,8 +54,8 @@
     <Compile Include="Events\api\IWeakEventListener.cs" />
     <Compile Include="Futures\imp\FutureCollectionsExtensions.cs" />
     <Compile Include="errors\FutureContentDisposed.cs" />
-    <Compile Include="Futures\imp\FutureClass.cs" />
-    <Compile Include="Futures\imp\PromiseClass.cs" />
+    <Compile Include="Futures\imp\Future.cs" />
+    <Compile Include="Futures\imp\Promise.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
