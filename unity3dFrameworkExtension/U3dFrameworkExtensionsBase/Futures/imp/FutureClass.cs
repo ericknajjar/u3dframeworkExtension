@@ -35,7 +35,7 @@ namespace u3dExtensions
 			Error = error;
 		}
 
-		#region IFuture implementation
+		#region IFuture implementationr
 
 		public Future<Unit> Map(Action<T> mapFunc)
 		{
