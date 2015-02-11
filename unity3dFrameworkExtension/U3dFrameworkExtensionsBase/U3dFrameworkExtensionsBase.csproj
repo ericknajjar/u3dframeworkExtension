@@ -43,10 +43,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="errors\PromiseResetException.cs" />
     <Compile Include="errors\U3dFrameworkExtensionException.cs" />
-    <Compile Include="Futures\api\IFuture.cs" />
-    <Compile Include="Futures\api\IPromise.cs" />
-    <Compile Include="Futures\imp\Future.cs" />
-    <Compile Include="Futures\imp\Promise.cs" />
     <Compile Include="Futures\imp\Unit.cs" />
     <Compile Include="Events\imp\EventSlot.cs" />
     <Compile Include="Events\api\IEventRegister.cs" />
@@ -58,6 +54,8 @@
     <Compile Include="Events\api\IWeakEventListener.cs" />
     <Compile Include="Futures\imp\FutureCollectionsExtensions.cs" />
     <Compile Include="errors\FutureContentDisposed.cs" />
+    <Compile Include="Futures\imp\FutureClass.cs" />
+    <Compile Include="Futures\imp\PromiseClass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -74,5 +72,6 @@
     <Folder Include="Events\" />
     <Folder Include="Events\imp\" />
     <Folder Include="Events\api\" />
+    <Folder Include="Futures\api\" />
   </ItemGroup>
 </Project>

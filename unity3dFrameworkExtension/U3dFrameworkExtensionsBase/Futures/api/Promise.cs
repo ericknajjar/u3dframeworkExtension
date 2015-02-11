@@ -2,9 +2,9 @@
 
 namespace u3dExtensions
 {
-	public interface IPromise<T>
+	public interface Promise<T>
 	{
-		IFuture<T> Future{get;}
+		Future<T> Future{get;}
 		void Fulfill(T val);
 		void FulfillError<K> (K e);
 	}
