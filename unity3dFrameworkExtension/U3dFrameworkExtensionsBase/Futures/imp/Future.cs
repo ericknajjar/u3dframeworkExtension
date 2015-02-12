@@ -4,13 +4,12 @@ using System.ComponentModel;
 
 namespace u3dExtensions
 {
-	public class Future<T>: IFuture<T>
+	public class InnerFuture
 	{
-	
-		Action<T> m_mapFunc = (t) => {};
+		Action<object> m_mapFunc = (t) => {};
 
 		Queue<RecoverPair> m_recoverPairs = new Queue<RecoverPair>();
-	
+
 		class RecoverPair
 		{
 			public Type ArgType;
@@ -21,15 +20,15 @@ namespace u3dExtensions
 				this.ArgType = argType;
 				this.RecoveryFunc = recoveryFunc;
 			}
-			
+
 		}
 
-		internal Future (): this(null)
+		internal InnerFuture (): this(null)
 		{
-		
+
 		}
 
-		internal Future (System.Exception error)
+		internal InnerFuture (System.Exception error)
 		{
 			IsSet = false;
 			Error = error;
@@ -37,7 +36,7 @@ namespace u3dExtensions
 
 		#region IFuture implementation
 
-		public IFuture<Unit> Map(Action<T> mapFunc)
+		public InnerFuture Map(Action<object> mapFunc)
 		{
 
 			return Map((x) =>{
@@ -46,19 +45,19 @@ namespace u3dExtensions
 			});
 		}
 
-		public IFuture<K> Map<K> (Func<T, K> mapFunc)
+		public InnerFuture Map (Func<object, object> mapFunc)
 		{
 			if(IsDisposed)
 				throw new FutureContentDisposed();
 
-			Future<K> other = new Future<K>();
+			InnerFuture other = new InnerFuture();
 
 			if(Error!=null)
 			{
 				other.FlushErrorRecover(Error);
 				return other;
 			}
-	
+
 			m_mapFunc += (x) =>
 			{
 				try
@@ -71,13 +70,13 @@ namespace u3dExtensions
 				}
 
 			};
-				
+
 			if(IsSet == true)
 			{
 				FlushMapFunc();
 			}
 
-			Recover((object e) => other.FlushErrorRecover(e));
+			Recover((object e) => other.FlushErrorRecover(e),typeof(object));
 
 			return other;
 		}
@@ -103,25 +102,19 @@ namespace u3dExtensions
 				m_recoverPairs.Clear ();
 			}
 		}
-
-		public IFuture<T> Recover(Action<System.Exception> recoverFunc)
-		{
-			return Recover<System.Exception> (recoverFunc);
-		}
-
-		public IFuture<T> Recover<K> (Action<K> recoverFunc)
+			
+		public InnerFuture Recover (Action<object> recoverFunc, Type t)
 		{
 			if(IsDisposed)
 				throw new FutureContentDisposed();
 
 			if(Error!=null)
 			{
-				if(Error is K)
-					recoverFunc((K)(object)Error);
+				recoverFunc(Error);
 			}
 			else
 			{
-				var recoverPair = new RecoverPair (typeof(K), ((obj) => recoverFunc ((K)obj)));
+				var recoverPair = new RecoverPair (t, ((obj) => recoverFunc (obj)));
 				m_recoverPairs.Enqueue (recoverPair);
 			}
 
@@ -143,7 +136,7 @@ namespace u3dExtensions
 						//break;
 					}
 				}
-					
+
 			}
 			finally
 			{
@@ -152,17 +145,17 @@ namespace u3dExtensions
 			}
 		}
 
-		public void Set(T value) 
+		public void Set(object value) 
 		{
 			if(IsSet) return;
-		
+
 
 			Value = value;
 			IsSet = true;
 			FlushMapFunc();
 		}
 
-						
+
 		public bool IsSet
 		{
 			get;
@@ -175,12 +168,12 @@ namespace u3dExtensions
 			private set;
 		}
 
-		public T Value {
+		public object Value {
 			get;
 			private set;
 		}
 
-	
+
 		private bool IsDisposed
 		{
 			get;
@@ -200,82 +193,133 @@ namespace u3dExtensions
 						disposable.Dispose();				
 					}
 				}
-					
+
 				IsDisposed = true;
 			}
 
 		}
 	}
 
+	internal class FutureWrapper<T>: IFuture<T>
+	{
+		InnerFuture m_innerFuture;
+		public FutureWrapper(InnerFuture innerFuture)
+		{
+			m_innerFuture = innerFuture;
+		}
+
+		#region IDisposable implementation
+
+		public void Dispose ()
+		{
+			m_innerFuture.Dispose();
+		}
+
+		#endregion
+
+		#region IFuture implementation
+
+		public bool IsSet {
+			get {
+				return m_innerFuture.IsSet;
+			}
+		}
+
+		public object Error {
+			get {
+				return m_innerFuture.Error;
+			}
+		}
+
+		public InnerFuture InnerFuture {
+			get {
+				return m_innerFuture;
+			}
+		}
+
+		#endregion
+	}
+
 	public static class Future
 	{
 		public static IFuture<T> Success<T>(T value)
 		{
-			Future<T> future = new Future<T>();
-			future.Set(value);
-			return future;
+			InnerFuture inner  = new InnerFuture();
+			inner.Set(value);
+
+			return new FutureWrapper<T>(inner);
 		}
 
 		public static IFuture<T> Failure<T>(Exception e)
 		{
-			Future<T> future = new Future<T>(e);
-		
-			return future;
+			InnerFuture inner  = new InnerFuture(e);
+			return new FutureWrapper<T>(inner);
 		}
 
-		public static IFuture<K> Recover<T,K>(this IFuture<T> me, Func<System.Exception, K> recoverFunc) where T:K
+		public static IFuture<Unit> Map<T>(this IFuture<T> me,System.Action<T> mapFunc)
 		{
-			return  me.Recover<T,K,Exception>(recoverFunc);
+			InnerFuture inner = me.InnerFuture;
+
+			var ret = inner.Map((obj) => mapFunc((T)obj));
+
+			return new FutureWrapper<Unit>(ret);
 		}
 
-		public static IFuture<K> Recover<T,K,W>(this IFuture<T> me, Func<W, K> recoverFunc) where T:K
+		public static IFuture<K> Map<T,K>(this IFuture<T> me,System.Func<T,K> mapFunc)
 		{
-			Future<K> other = new Future<K>();
+			InnerFuture inner = me.InnerFuture;
 
-			me.Recover((W e) =>{ other.Set(recoverFunc(e));});
-			me.Map((val) =>{ other.Set(val);});
+			var ret = inner.Map((obj) => mapFunc((T)obj));
 
-			return  other;
+			return new FutureWrapper<K>(ret);
+		}	
+
+		public static IFuture<T> Recover<T>(this IFuture<T> me,Action<System.Exception> recoverFunc)
+		{
+			InnerFuture inner = me.InnerFuture;
+
+			var ret = inner.Recover((obj) => {
+
+				if(obj is Exception)
+					recoverFunc((Exception)obj);
+			
+			},typeof(Exception));
+
+			return new FutureWrapper<T>(ret);
 		}
 
-		public static IFuture<K> FlatRecover<T,K>(this IFuture<T> me, Func<System.Exception, IFuture<K>> recoverFunc) where T:K
+		public static T GetValue<T>(this IFuture<T> me)
 		{
-
-			return  me.FlatRecover<T,K,Exception>(recoverFunc);
+			return (T)me.InnerFuture.Value;
 		}
 
-		public static IFuture<K> FlatRecover<T,K,W>(this IFuture<T> me, Func<W, IFuture<K>> recoverFunc) where T:K
+		public static IFuture<T> Recover<T,K> (this IFuture<T> me,Action<K> recoverFunc)
 		{
-			Future<K> other = new Future<K>();
 
-			me.Recover((W e) =>
-			{ 
-				var future = recoverFunc(e);
-				future.Map((x) => other.Set(x));
-				future.Recover((e2) => other.FlushErrorRecover(e2));
-			});
+			InnerFuture inner = me.InnerFuture;
 
-			me.Recover ((object e) => {
-				if(!(e is W))
-					other.FlushErrorRecover(e);
-			});
-		
-			me.Map((val) =>{ other.Set(val);});
+			var ret = inner.Recover((obj) => 
+				{
 
-			return  other;
+					if(obj is K)
+						recoverFunc((K)obj);
+				},typeof(K));
+
+			return new FutureWrapper<T>(ret);
 		}
 
 		public static IFuture<T> Complete<T> (this IFuture<T> me,System.Action completeFunc)
 		{
-			me.Map((t) => completeFunc());
-			me.Recover((object o) => completeFunc());
+
+			me.InnerFuture.Map((t) => completeFunc());
+			me.InnerFuture.Recover((object o) =>{ completeFunc();},typeof(object));
 
 			return me;
 		}
 
 		public static IFuture<K> FlatMap<T,K> (this IFuture<T> me,System.Func<T,IFuture<K>> flatMapFunc)
 		{
-			Future<K> other = new Future<K>();
+			InnerFuture other = new InnerFuture();
 
 			me.Map((x) =>{
 
@@ -284,7 +328,50 @@ namespace u3dExtensions
 
 			}).Recover((e)=> other.FlushErrorRecover(e));
 
-			return other;
+			return new FutureWrapper<K>(other);
+		}
+
+		public static IFuture<K> Recover<T,K>(this IFuture<T> me, Func<System.Exception, K> recoverFunc) //where T:K
+		{
+			return  me.Recover<T,K,Exception>(recoverFunc);
+		}
+
+		public static IFuture<K> Recover<T,K,W>(this IFuture<T> me, Func<W, K> recoverFunc)// where T:K
+		{
+			InnerFuture other = new InnerFuture();
+
+			me.Recover((W e) =>{ other.Set(recoverFunc(e));});
+			me.Map((val) =>{ other.Set(val);});
+
+			return new FutureWrapper<K>(other);
+		}
+
+	
+		public static IFuture<K> FlatRecover<T,K>(this IFuture<T> me, Func<System.Exception, IFuture<K>> recoverFunc) where T:K
+		{
+
+			return  me.FlatRecover<T,K,Exception>(recoverFunc);
+		}
+
+		public static IFuture<K> FlatRecover<T,K,W>(this IFuture<T> me, Func<W, IFuture<K>> recoverFunc) where T:K
+		{
+			InnerFuture other = new InnerFuture();
+
+			me.Recover((W e) =>
+				{ 
+					var future = recoverFunc(e);
+					future.Map((x) => other.Set(x));
+					future.Recover((e2) => other.FlushErrorRecover(e2));
+				});
+
+			me.Recover ((object e) => {
+				if(!(e is W))
+					other.FlushErrorRecover(e);
+			});
+
+			me.Map((val) =>{ other.Set(val);});
+
+			return  new FutureWrapper<K>(other);
 		}
 	}
 }

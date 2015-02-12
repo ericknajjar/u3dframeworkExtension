@@ -2,7 +2,7 @@
 
 namespace u3dExtensions
 {
-	public interface IFuture<T> : IDisposable
+	/*public interface IFuture<T> : IDisposable
 	{
 		IFuture<Unit> Map(System.Action<T> mapFunc);
 
@@ -16,6 +16,27 @@ namespace u3dExtensions
 		object Error{get;}
 
 		T Value{get;}
+	}*/
+
+	public interface IFuture<T> : IDisposable
+	{
+		//IFuture<Unit> Map(System.Action<T> mapFunc);
+		//IFuture<K> Map<K>(System.Func<T,K> mapFunc);
+
+		//IFuture<T> Recover(Action<System.Exception> recoverFunc);
+		//IFuture<T> Recover<K> (Action<K> recoverFunc);
+		//T Value{get;}
+
+		bool IsSet{get;}
+
+		object Error{get;}
+
+		InnerFuture InnerFuture{get;}
+
 	}
+		
+
+
+		
 }
 

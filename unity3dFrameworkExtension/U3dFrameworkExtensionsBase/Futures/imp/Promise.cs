@@ -4,21 +4,19 @@ namespace u3dExtensions
 {
 	public class Promise<T>: IPromise<T>
 	{
-		Future<T> m_future = new Future<T>();
-
+		InnerFuture m_future = new InnerFuture();
+	
 		public Promise ()
 		{
-
+			Future = new FutureWrapper<T>(m_future);
 		}
 
 		#region IPromise implementation
 
 		public IFuture<T> Future 
 		{
-			get 
-			{
-				return m_future;
-			}
+			get;
+			private set;
 		}
 
 		#endregion

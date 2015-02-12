@@ -329,7 +329,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = m_future.Map((x) =>{ return x;}).Recover((e) => 33);
 			m_promise.Fulfill(32);
 
-			Assert.AreEqual(32,other.Value);
+			Assert.AreEqual(32,other.GetValue());
 		}
 
 		[Test ()]
@@ -338,7 +338,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = m_future.Map((x) =>{ return x;}).Recover((e) => 33);
 			m_promise.FulfillError(new Exception());
 
-			Assert.AreEqual(33,other.Value);
+			Assert.AreEqual(33,other.GetValue());
 		}
 
 		[Test ()]
@@ -347,7 +347,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Success(33));
 			m_promise.Fulfill(32);
 
-			Assert.AreEqual(32,other.Value);
+			Assert.AreEqual(32,other.GetValue());
 		}
 
 		[Test ()]
@@ -356,7 +356,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = m_future.Map((x) =>{ return x;}).FlatRecover((e) => Future.Success(33));
 			m_promise.FulfillError(new Exception());
 
-			Assert.AreEqual(33,other.Value);
+			Assert.AreEqual(33,other.GetValue());
 		}
 
 
@@ -409,7 +409,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = m_future.Map((x) =>{ return x;}).Recover((e) => (object)"33");
 			m_promise.FulfillError(new Exception());
 
-			Assert.AreEqual("33",other.Value);
+			Assert.AreEqual("33",other.GetValue());
 		}
 
 		[Test ()]
@@ -423,7 +423,7 @@ namespace u3dExtensions.Tests.FuturesTests
 			var other = future.Map((x) => x).Recover((e) => a);
 
 
-			Assert.AreEqual(b,other.Value);
+			Assert.AreEqual(b,other.GetValue());
 		}
 
 		[Test ()]
@@ -436,7 +436,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			var other = future.Map((x) =>{throw new Exception(); return x;}).Recover((e) => a);
 
-			Assert.AreEqual(a,other.Value);
+			Assert.AreEqual(a,other.GetValue());
 		}
 
 		[Test ()]
@@ -448,7 +448,7 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			m_promise.FulfillError(new NullReferenceException());
 
-			Assert.AreEqual("34",other.Value);
+			Assert.AreEqual("34",other.GetValue());
 		}
 
 		[Test ()]
@@ -694,7 +694,7 @@ namespace u3dExtensions.Tests.FuturesTests
 				return 33;
 			});
 
-			Assert.AreEqual(33,future.Value);
+			Assert.AreEqual(33,future.GetValue());
 		}
 
 		[Test, Timeout(2000)]
