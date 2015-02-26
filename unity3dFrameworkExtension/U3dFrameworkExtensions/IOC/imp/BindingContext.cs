@@ -89,7 +89,7 @@ namespace u3dExtensions.IOC
 
 		bool TryGet<T> (IBindingName name, IBindingKey key,out T t, object[] extras)
 		{
-			object ret = TryGetBingind (name, key, extras);
+			object ret = TryGetBinding (name, key, extras);
 
 			if (ret != null) {
 				t = (T)ret;
@@ -100,7 +100,7 @@ namespace u3dExtensions.IOC
 			return false;
 		}
 
-		object TryGetBingind (IBindingName name, IBindingKey key, object[] extras)
+		object TryGetBinding (IBindingName name, IBindingKey key, object[] extras)
 		{
 			ValueBindingContext ret = null;
 
@@ -118,7 +118,7 @@ namespace u3dExtensions.IOC
 
 		public object Get(IBindingName name,IBindingKey key, params object[] extras)
 		{
-			object ret = TryGetBingind (name, key, extras);
+			object ret = TryGetBinding (name, key, extras);
 			if(ret == null) throw new BindingNotFound(name,key);
 			return ret;
 		}
