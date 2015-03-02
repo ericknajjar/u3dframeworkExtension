@@ -34,7 +34,7 @@ namespace u3dExtensions
 			m_future.Set(val);
 		}
 
-		public void FulfillError<K> (K e)
+		public void FulfillError (object e)
 		{
 			ThrowIfCantFulfill ();
 
