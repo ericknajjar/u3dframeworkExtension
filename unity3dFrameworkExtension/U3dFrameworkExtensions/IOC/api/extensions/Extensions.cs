@@ -33,10 +33,16 @@ namespace u3dExtensions.IOC.extensions
 			return me.Get<T>(new BindingName(name),extras);
 		}
 
+		static public  T Get<T>(this IBindingContext me)
+		{
+			return me.Get<T>(new BindingName(InnerBindingNames.Empty));
+		}
+
 		static public  bool TryGet<T>(this IBindingContext me,object name,out T t, params object[] extras)
 		{
 			return me.TryGet<T>(new BindingName(name),out t);
 		}
+			
 	}
 
 	public static class BindingRequirementsExtensions

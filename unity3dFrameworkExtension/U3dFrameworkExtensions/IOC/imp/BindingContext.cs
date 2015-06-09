@@ -56,13 +56,7 @@ namespace u3dExtensions.IOC
 			IBindingKey key = new BindingKey(typeof(T));
 			return (T)Get(name,key,extras);
 		}
-
-		T IBindingContext.Get<T> ()
-		{
-			IBindingKey key = new BindingKey(typeof(T));
-			return (T)Get(new BindingName(InnerBindingNames.Empty),key);
-		}
-
+			
 		bool IBindingContext.TryGet<T> (out T t, params object[] extras)
 		{
 			IBindingKey key = new BindingKey(typeof(T));
