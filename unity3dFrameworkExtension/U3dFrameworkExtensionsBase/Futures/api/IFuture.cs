@@ -27,6 +27,8 @@ namespace u3dExtensions
 		//IFuture<T> Recover<K> (Action<K> recoverFunc);
 		//T Value{get;}
 
+		void Cancel();
+
 		bool IsSet{get;}
 
 		object Error{get;}

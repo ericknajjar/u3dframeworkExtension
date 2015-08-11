@@ -10,8 +10,10 @@ namespace u3dExtensions
 
 		Queue<RecoverPair> m_recoverPairs = new Queue<RecoverPair>();
 
+		bool m_canceled = false;
+
 		class RecoverPair
-		{
+		{	
 			public Type ArgType;
 			public Action<object> RecoveryFunc;
 
@@ -51,6 +53,9 @@ namespace u3dExtensions
 				throw new FutureContentDisposed();
 
 			InnerFuture other = new InnerFuture();
+
+			if(m_canceled)
+				return other;
 
 			if(Error!=null)
 			{
@@ -121,6 +126,12 @@ namespace u3dExtensions
 			return this;
 		}
 		#endregion
+
+		public void Cancel()
+		{
+			if (!IsSet)
+				m_canceled = true;
+		}
 
 		public void FlushErrorRecover(object error)
 		{
@@ -198,46 +209,6 @@ namespace u3dExtensions
 			}
 
 		}
-	}
-
-	internal class FutureWrapper<T>: IFuture<T>
-	{
-		InnerFuture m_innerFuture;
-		public FutureWrapper(InnerFuture innerFuture)
-		{
-			m_innerFuture = innerFuture;
-		}
-
-		#region IDisposable implementation
-
-		public void Dispose ()
-		{
-			m_innerFuture.Dispose();
-		}
-
-		#endregion
-
-		#region IFuture implementation
-
-		public bool IsSet {
-			get {
-				return m_innerFuture.IsSet;
-			}
-		}
-
-		public object Error {
-			get {
-				return m_innerFuture.Error;
-			}
-		}
-
-		public InnerFuture InnerFuture {
-			get {
-				return m_innerFuture;
-			}
-		}
-
-		#endregion
 	}
 
 	public static class Future

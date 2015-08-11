@@ -1084,6 +1084,83 @@ namespace u3dExtensions.Tests.FuturesTests
 
 			Assert.That(called);
 		}
+
+		[Test]
+		public void CanceledFuturesDonMapIfNotCompleted()
+		{
+			var promise = new Promise<int>();
+	
+
+			promise.Future.Cancel();
+			promise.Fulfill(33);
+			bool called = false;
+
+			promise.Future.Map((i) =>{
+				called = true;
+			});
+
+			Assert.That(!called);
+
+		}
+
+		[Test]
+		public void CanceledFuturesMapsCompleted()
+		{
+			var promise = new Promise<int>();
+		
+			promise.Fulfill(33);
+			promise.Future.Cancel();
+
+			bool called = false;
+
+			promise.Future.Map((i) =>{
+				called = true;
+			});
+
+			Assert.That(called);
+
+		}
+
+		[Test]
+		public void CanceledFuturesMapsDontCompleteChildIfCanceled()
+		{
+			var promise = new Promise<int>();
+
+			promise.Future.Cancel();
+			promise.Fulfill(33);
+
+			bool called = false;
+
+			promise.Future.Map((i) => {
+			}).Map((u) =>{
+
+				called = true;
+			});
+
+			Assert.That(!called);
+
+		}
+
+		[Test]
+		public void CanceledFuturesMapsifCanceledAfterFulfill()
+		{
+			var promise = new Promise<int>();
+
+			promise.Fulfill(33);
+			promise.Future.Cancel();
+
+			bool called = false;
+
+			promise.Future.Map((i) => {
+			}).Map((u) =>{
+
+				called = true;
+			});
+
+			Assert.That(called);
+
+		}
+
 	}
 }
 
